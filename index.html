@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Old Bounce</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400&display=swap');
+  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: rgb(11, 19, 32); touch-action: none; font-family: 'Teko', sans-serif; font-weight: 300; letter-spacing: 1px; color: rgb(252, 232, 232); user-select: none; }
+  canvas { display: block; width: 100%; height: 100%; }
+  
+  .ui { position: absolute; top: 20px; left: 20px; color: rgb(252, 232, 232); font-size: 28px; font-weight: 400; text-shadow: 0 4px 6px rgba(0,0,0,0.6); z-index: 10; pointer-events: none; display: flex; gap: 20px; text-transform: uppercase; }
+  .ui-badge { background: rgba(255,255,255,0.05); padding: 4px 16px; border-radius: 12px; backdrop-filter: blur(4px); border: 1px solid rgba(255, 71, 87, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+  
+  .controls { position: absolute; bottom: 30px; left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 30px; box-sizing: border-box; pointer-events: none; z-index: 10; }
+  .btn-group { display: flex; gap: 15px; }
+  .btn { width: 70px; height: 70px; border-radius: 35px; background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; justify-content: center; color: rgb(252, 232, 232); font-size: 32px; pointer-events: auto; touch-action: none; backdrop-filter: blur(5px); box-shadow: 0 8px 16px rgba(0,0,0,0.4); transition: background 0.1s, transform 0.1s; font-family: -apple-system, sans-serif; }
+  .btn:active { background: rgba(255, 71, 87, 0.25); transform: translateY(4px); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
+  
+  .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 20; transition: opacity 0.3s; pointer-events: none; }
+  .overlay-bg { background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
+  
+  .interstitial { position: absolute; top: 20%; left: 0; width: 100%; text-align: center; color: rgb(252, 232, 232); opacity: 0; transition: opacity 0.5s; pointer-events: none; }
+  .inter-title { font-size: 90px; font-weight: 400; letter-spacing: 6px; text-shadow: 0 10px 20px rgba(0,0,0,0.8); margin-bottom: 0px; color: rgb(255, 71, 87); text-transform: uppercase; line-height: 1; }
+  .inter-sub { font-size: 36px; color: rgb(255, 107, 129); font-weight: 300; text-shadow: 0 4px 10px rgba(0,0,0,0.8); text-transform: uppercase; letter-spacing: 2px; }
+
+  .msg-box { position: relative; background: linear-gradient(145deg, rgb(19, 15, 38), rgb(11, 8, 23)); padding: 40px 60px; border-radius: 24px; text-align: center; color: rgb(252, 232, 232); box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 1px solid rgba(255, 71, 87, 0.2); pointer-events: auto; }
+  .msg-title { font-size: 56px; font-weight: 400; margin-bottom: 10px; color: rgb(255, 71, 87); text-transform: uppercase; letter-spacing: 3px; line-height: 1; }
+  
+  .menu-btn { background: rgba(255, 71, 87, 0.05); border: 1px solid rgba(255, 71, 87, 0.3); color: rgb(252, 232, 232); padding: 12px 30px; border-radius: 12px; font-size: 26px; font-weight: 300; cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 15px; font-family: 'Teko', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+  .menu-btn:hover { background: rgba(255, 71, 87, 0.15); border-color: rgba(255, 71, 87, 0.6); transform: translateY(-2px); }
+  .menu-btn:active { transform: translateY(2px); }
+
+  .gen-btn { background: linear-gradient(145deg, rgb(255, 71, 87), rgb(192, 57, 43)); color: white; border: none; padding: 12px 30px; border-radius: 12px; font-size: 26px; font-weight: 400; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4); transition: all 0.2s; width: 100%; font-family: 'Teko', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+  .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6); }
+  .gen-btn:active { transform: translateY(2px); box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4); }
+  .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  
+  .ai-input { width: 100%; max-width: 400px; padding: 10px 14px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.5); background: rgba(0,0,0,0.5); color: rgb(252, 232, 232); font-size: 24px; margin-bottom: 20px; outline: none; transition: border-color 0.2s; box-sizing: border-box; text-align: center; font-family: 'Teko', sans-serif; font-weight: 300; letter-spacing: 1px; }
+  .ai-input:focus { border-color: rgb(255, 71, 87); box-shadow: 0 0 10px rgba(255, 71, 87, 0.3); }
+
+  .loading-container { display: none; flex-direction: column; align-items: center; margin-top: 25px; }
+  .spinner { width: 45px; height: 45px; border: 4px solid rgba(255, 71, 87, 0.2); border-top: 4px solid rgb(255, 71, 87); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
+  @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  
+  [id="startOverlay"], [id="promptOverlay"], [id="aiLoadingContainer"], [id="aiError"] { }
+</style>
+</head>
+<body>
+
+<div class="ui">
+  <div class="ui-badge">Level <span id="levelCounter">1</span></div>
+  <div class="ui-badge" id="ringBadge">Rings: <span id="rings">0/0</span></div>
+</div>
+
+<div class="overlay" id="startOverlay">
+  <div class="overlay-bg"></div>
+  <div class="msg-box">
+    <div class="msg-title" id="msgTitle">OLD BOUNCE</div>
+    <div id="msgSub" style="font-size: 24px; color: rgb(255, 107, 129); margin-bottom: 25px; font-weight: 300;">Select a Game Mode</div>
+    <button class="menu-btn" onclick="startGame(event)">Play Original Adventure</button>
+    <button class="gen-btn" onclick="openPrompt(event)">AI Level Generator</button>
+  </div>
+</div>
+
+<div class="overlay" id="promptOverlay" style="display:none; opacity:0;">
+  <div class="overlay-bg" onclick="closePrompt(event)"></div>
+  <div class="msg-box" style="cursor: default;">
+     <div class="msg-title" style="font-size: 48px; color: rgb(255, 71, 87);">FORGE A LEVEL</div>
+     <input type="text" id="aiPrompt" class="ai-input" placeholder="e.g., A long cave with lava and traps" />
+     <br/>
+     <button onclick="submitAiLevel(event)" class="gen-btn" id="btnSubmitAi">Generate Play</button>
+     <button class="menu-btn" style="margin-top: 15px; margin-bottom: 0;" onclick="closePrompt(event)">Back to Menu</button>
+     
+     <div id="aiLoadingContainer" class="loading-container">
+       <div class="spinner"></div>
+       <div style="color: rgb(255, 107, 129); font-weight:400; font-size: 26px; letter-spacing: 2px;">Forging: <span id="etaTimer">15s</span></div>
+     </div>
+     <div id="aiError" style="display:none; color: rgb(255, 71, 87); margin-top: 15px; font-weight:400; font-size: 26px;">Generation failed. Try again.</div>
+  </div>
+</div>
+
+<div class="interstitial" id="interstitialUI">
+  <div class="inter-title" id="interLevel">Level 2</div>
+  <div class="inter-sub" id="interMood">Let's Go!</div>
+</div>
+
+<canvas id="gameCanvas"></canvas>
+
+<div class="controls">
+  <div class="btn-group">
+    <div class="btn" id="btnLeft">L</div>
+    <div class="btn" id="btnRight">R</div>
+  </div>
+  <div class="btn" id="btnJump">U</div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const levelEl = document.getElementById('levelCounter');
+const ringsEl = document.getElementById('rings');
+const ringBadge = document.getElementById('ringBadge');
+const startOverlay = document.getElementById('startOverlay');
+const promptOverlay = document.getElementById('promptOverlay');
+const aiPrompt = document.getElementById('aiPrompt');
+const btnSubmitAi = document.getElementById('btnSubmitAi');
+const aiLoadingContainer = document.getElementById('aiLoadingContainer');
+const etaTimer = document.getElementById('etaTimer');
+const aiError = document.getElementById('aiError');
+const interUI = document.getElementById('interstitialUI');
+const interLevel = document.getElementById('interLevel');
+const interMood = document.getElementById('interMood');
+
+const mult = (a, b) => a / (1 / b);
+
+let width, height;
+function resize() {
+  width = canvas.width = window.innerWidth;
+  height = canvas.height = window.innerHeight;
+}
+window.addEventListener('resize', resize);
+resize();
+
+const AudioContext = window.AudioContext || window.webkitAudioContext;
+let audioCtx;
+function playSound(type) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  const now = audioCtx.currentTime;
+  
+  if (type === 'jump') {
+    osc.type = 'sine'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(600, now + 0.15);
+    gain.gain.setValueAtTime(0.4, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    osc.start(now); osc.stop(now + 0.15);
+  } else if (type === 'bounce') {
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(150, now); osc.frequency.exponentialRampToValueAtTime(80, now + 0.1);
+    gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+    osc.start(now); osc.stop(now + 0.1);
+  } else if (type === 'ring') {
+    osc.type = 'square'; osc.frequency.setValueAtTime(800, now); osc.frequency.setValueAtTime(1200, now + 0.05);
+    gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
+    osc.start(now); osc.stop(now + 0.1);
+  } else if (type === 'door') {
+    osc.type = 'square'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(400, now + 0.4);
+    gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.4);
+    osc.start(now); osc.stop(now + 0.4);
+  } else if (type === 'explosion') {
+    osc.type = 'sawtooth'; osc.frequency.setValueAtTime(100, now); osc.frequency.exponentialRampToValueAtTime(10, now + 0.4);
+    gain.gain.setValueAtTime(0.6, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+    osc.start(now); osc.stop(now + 0.4);
+  } else if (type === 'cheer') {
+    osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.linearRampToValueAtTime(600, now + 0.2); osc.frequency.linearRampToValueAtTime(800, now + 0.4);
+    gain.gain.setValueAtTime(0.3, now); gain.gain.linearRampToValueAtTime(0, now + 0.5);
+    osc.start(now); osc.stop(now + 0.5);
+  }
+}
+
+const TILE_SIZE = 45;
+const GRAVITY = 0.35;
+const FRICTION_GROUND = 0.80;
+const FRICTION_AIR = 0.92;
+const JUMP_FORCE = -8.5;
+const MOVE_ACCEL = 1.2;
+const MAX_SPEED = 6.5;
+const BOUNCE_FACTOR = -0.35;
+
+let gameState = 'start'; 
+let gameMode = 'campaign'; 
+let currentLevel = 0;
+let map = [];
+let aiMapCache = [];
+let ringsTotal = 0;
+let ringsCollected = 0;
+let time = 0;
+let interstitialTimer = 0;
+let onConveyor = 0;
+let particles = []; 
+
+const levels = [
+  [
+    "1111111111111111111111111",
+    "10000000000000000000000E1",
+    "1000000000000000000011111",
+    "1000000000000000111100001",
+    "1000000000001111000000001",
+    "1000000011110000000000001",
+    "1S00111100000000000000001",
+    "1111111111111111111111111"
+  ],
+  [
+    "11111111111111111111111111",
+    "10000000000000000000000001",
+    "100000000000000000000000E1",
+    "10000000000000000000011111",
+    "10000000000000011110000001",
+    "10000000001110000000000001",
+    "10000011100000000000000001",
+    "1S000000000000001110000001",
+    "11110001110001110000001111",
+    "1111XX1111XXX111XXXXX11111",
+    "11111111111111111111111111"
+  ],
+  [
+    "11111111111111111111111111",
+    "100000000000000000000000E1",
+    "10000000000000000000001111",
+    "10000000000000000011110001",
+    "10000000000000111100000001",
+    "100000000011110000000B0001",
+    "10000B00000000000000111111",
+    "1S01111000000B000000000001",
+    "11111111111111111111111111"
+  ],
+  [
+    "11111111111111111111111111",
+    "1000000000R000000000000001",
+    "1000000011111000000R0000E1",
+    "1000R000000000011111101111",
+    "10111110000000000000000001",
+    "1000000000R0000000R0000001",
+    "1S000000111110011111000001",
+    "11111111111111111111111111"
+  ],
+  [
+    "11111111111111111111111111",
+    "100000000000000000000000E1",
+    "10000000000000000000001111",
+    "10000000000000000111110001",
+    "100000000000<<<<<000000001",
+    "10000000011100000000000001",
+    "10000>>>>>0000000000000001",
+    "10000000000000000000000001",
+    "100<<<<<<00000000000000001",
+    "10000000000000000000000001",
+    "1S000000000000000000000001",
+    "1111>>>>>>1111111111111111",
+    "11111111111111111111111111"
+  ],
+  [
+    "11111111111111111111111111",
+    "100000000000000000000000E1",
+    "10000000000000000000001111",
+    "10000000000000000000000001",
+    "10000000000000000TT00TT001",
+    "10000000000000000000000001",
+    "10000000000000TT00TT000001",
+    "10000000000000000000000001",
+    "1000000000TT00TT0000000001",
+    "10000000000000000000000001",
+    "100000TT00TT00000000000001",
+    "10000000000000000000000001",
+    "1S000000000000000000000001",
+    "11111111111111111111111111"
+  ],
+  [
+    "1111111111111111111111111111",
+    "10000000000000000000000000E1",
+    "1000000000000000000000001111",
+    "1000000000000000000000000001",
+    "1000000000000000000>>>>>0001",
+    "10000000000000000000000X0001",
+    "10000000000000<<<<<001111111",
+    "1000000000000000000000000001",
+    "100000000>>>>>00000000000001",
+    "1000000000000X00000000000001",
+    "10000<<<<<011111110000000001",
+    "1000000000000000000000000001",
+    "1S00000000000000000000000001",
+    "1111111111111111111111111111"
+  ],
+  [
+    "1111111111111111111111111111",
+    "10000000000000000000000000E1",
+    "1000000000000000000000001111",
+    "1000000000000000000TT0000001",
+    "1000000000000000000000000001",
+    "100000000000000TT000B0000001",
+    "1000000000000000000111111111",
+    "10000000000TT000B00000000001",
+    "1000000000000011111100000001",
+    "100000TT000B0000000000000001",
+    "1000000001111100000000000001",
+    "1S00000000000000000000000001",
+    "1111111111111111111111111111"
+  ],
+  [
+    "1111111111111111111111111111",
+    "10000000000000000000000000E1",
+    "1000000000000000000000001111",
+    "1000000000000000000011110001",
+    "1000000000000000111100000001",
+    "10000000000011110000000X0001",
+    "1000000011110000000001111111",
+    "100001110000000X000000000001",
+    "1001100000000111111100000001",
+    "1010000X00000000000000000001",
+    "1011111111110000000000000001",
+    "1S00000000000000000000000001",
+    "1111111111111111111111111111"
+  ],
+  [
+    "111111111111111111111111111111111111111",
+    "100000000000000000000000000000000000001",
+    "100000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000E1",
+    "100000000000000000000000000000000011111",
+    "1000000000000000000000000000000R0000001",
+    "100000000000000000000000000011111000001",
+    "1000000000000000000000000TT000000000001",
+    "1000000000000000000000TT000000000000001",
+    "1000000000000000000TT000000B00000000001",
+    "1000000000000000TT000000111111110000001",
+    "100000000000000000000000000000000000001",
+    "10000000R00>>>>>000X0000000000000000001",
+    "100001111100000001111111000000000000001",
+    "1S0000000000000000000000000000000000001",
+    "111111111111111111111111111111111111111"
+  ]
+];
+
+const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 15, squash: 1, stretch: 1, angle: 0, isGrounded: false, jumps: 0 };
+const keys = { left: false, right: false, up: false, jumpPressed: false };
+
+function bindBtn(id, key) {
+  const el = document.getElementById(id);
+  const press = (e) => { e.preventDefault(); keys[key] = true; };
+  const release = (e) => { e.preventDefault(); keys[key] = false; };
+  el.addEventListener('touchstart', press, {passive: false});
+  el.addEventListener('touchend', release, {passive: false});
+  el.addEventListener('mousedown', press);
+  el.addEventListener('mouseup', release);
+  el.addEventListener('mouseleave', release);
+}
+bindBtn('btnLeft', 'left');
+bindBtn('btnRight', 'right');
+bindBtn('btnJump', 'up');
+
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft') keys.left = true;
+  if (e.key === 'ArrowRight') keys.right = true;
+  if (e.key === 'ArrowUp' || e.key === ' ') keys.up = true;
+});
+window.addEventListener('keyup', e => {
+  if (e.key === 'ArrowLeft') keys.left = false;
+  if (e.key === 'ArrowRight') keys.right = false;
+  if (e.key === 'ArrowUp' || e.key === ' ') keys.up = false;
+});
+
+function loadLevelData(layoutMap, isAI) {
+  map = []; ringsTotal = 0; ringsCollected = 0; particles = [];
+  for (let y = 0; y < layoutMap.length; y++) {
+    let row = [];
+    for (let x = 0; x < layoutMap[y].length; x++) {
+      const char = layoutMap[y][x];
+      if (char === '1') row.push(1);
+      else if (char === 'X') row.push(2);
+      else if (char === 'R') { row.push(3); ringsTotal++; }
+      else if (char === 'E') row.push(4);
+      else if (char === 'B') row.push(5);
+      else if (char === '<') row.push(6);
+      else if (char === '>') row.push(7);
+      else if (char === 'T') row.push(8);
+      else if (char === 'S') { 
+        row.push(0); 
+        ball.x = x / (1/TILE_SIZE) + TILE_SIZE/2; 
+        ball.y = y / (1/TILE_SIZE) + TILE_SIZE/2; 
+      }
+      else row.push(0);
+    }
+    map.push(row);
+  }
+  ball.vx = 0; ball.vy = 0; ball.squash = 1; ball.stretch = 1; ball.angle = 0;
+  
+  if(isAI) {
+      levelEl.innerText = 'AI';
+  } else {
+      levelEl.innerText = currentLevel + 1;
+  }
+  
+  if (ringsTotal === 0) {
+    ringBadge.style.display = 'none';
+  } else {
+    ringBadge.style.display = 'block';
+    ringsEl.innerText = ringsCollected + '/' + ringsTotal;
+  }
+  
+  gameState = 'play';
+  startOverlay.style.opacity = '0';
+  promptOverlay.style.opacity = '0';
+  interUI.style.opacity = '0';
+  setTimeout(() => {
+    startOverlay.style.display = 'none';
+    promptOverlay.style.display = 'none';
+  }, 300);
+}
+
+function loadLevel(idx) {
+  if (idx >= levels.length) {
+    gameState = 'win';
+    document.getElementById('msgTitle').innerText = 'MASTERED';
+    document.getElementById('msgSub').innerText = 'You beat the campaign!';
+    startOverlay.style.display = 'flex';
+    setTimeout(() => startOverlay.style.opacity = '1', 10);
+    return;
+  }
+  loadLevelData(levels[idx], false);
+}
+
+const obscureKey = "c2stb3ItdjEtZTkxZTczZmUwNDc2NWE4ZjU5ZDU4N2Y2NGM5ZDQ1ZjljNGJmOWJmNjY1ZGYzODNkM2E3MDk4YjZjYjg0MTI4OA==";
+
+function openPrompt(e) {
+  if(e) e.stopPropagation();
+  startOverlay.style.opacity = '0';
+  setTimeout(() => {
+    startOverlay.style.display = 'none';
+    promptOverlay.style.display = 'flex';
+    setTimeout(() => promptOverlay.style.opacity = '1', 10);
+  }, 300);
+}
+
+function closePrompt(e) {
+  if(e) e.stopPropagation();
+  promptOverlay.style.opacity = '0';
+  setTimeout(() => {
+    promptOverlay.style.display = 'none';
+    startOverlay.style.display = 'flex';
+    setTimeout(() => startOverlay.style.opacity = '1', 10);
+  }, 300);
+}
+
+function isMapValid(mapData) {
+  if (!mapData || !mapData.length) return false;
+  let start = null, exit = null;
+  let rings = [];
+  for(let r=0; r<mapData.length; r++) {
+      for(let c=0; c<mapData[r].length; c++) {
+          if(mapData[r][c] === 'S') start = {r,c};
+          if(mapData[r][c] === 'E') exit = {r,c};
+          if(mapData[r][c] === 'R') rings.push({r,c});
+      }
+  }
+  if(!start || !exit) return false;
+
+  let visited = Array(mapData.length).fill(0).map(() => Array(mapData[0].length).fill(false));
+  let queue = [start];
+  visited[start.r][start.c] = true;
+
+  let reachedExit = false;
+  let reachedRings = 0;
+
+  while(queue.length > 0) {
+      let node = queue.shift();
+      let r = node.r;
+      let c = node.c;
+      
+      if(r === exit.r && c === exit.c) reachedExit = true;
+      if(mapData[r][c] === 'R') reachedRings++;
+
+      const dirs = [];
+      for(let dr=-3; dr<=8; dr++) { 
+          for(let dc=-4; dc<=4; dc++) {
+              if (Math.abs(dr) <= 3 || (dr > 3 && Math.abs(dc) <= 2)) {
+                  dirs.push([dr, dc]);
+              }
+          }
+      }
+      
+      for(let i=0; i<dirs.length; i++) {
+          let dr = dirs[i][0];
+          let dc = dirs[i][1];
+          let nr = r + dr, nc = c + dc;
+          if(nr>=0 && nr<mapData.length && nc>=0 && nc<mapData[0].length && !visited[nr][nc]) {
+              let tile = mapData[nr][nc];
+              if(tile !== '1' && tile !== '2') {
+                  visited[nr][nc] = true;
+                  queue.push({r: nr, c: nc});
+              }
+          }
+      }
+  }
+  return reachedExit && (reachedRings === rings.length);
+}
+
+async function generateCustomLevelAPI(userPrompt, retryCount = 0) {
+  const url = 'https://openrouter.ai/api/v1/chat/completions';
+  const systemInstruction = `You are an expert level designer for a 2D grid-based platformer game. Generate a level based on the user request.
+Tile Map Legend:
+'1': Wall/Floor
+'0': Empty Space
+'X': Spike (deadly)
+'B': Bomb (deadly)
+'<': Conveyor Left
+'>': Conveyor Right
+'T': Timed Trap (disappears periodically)
+'R': Ring (collectible)
+'S': Start Position (EXACTLY ONE required)
+'E': Exit Door (AT LEAST ONE required)
+
+Rules:
+1. Create a rectangular grid array EXACTLY 16 rows by 60 columns to create a MASSIVE, long adventure layout.
+2. The outer border MUST be mostly '1's to trap the player.
+3. CRITICAL STRUCTURAL RULE: 'S' MUST be placed on the far LEFT side of the map (column 1 or 2).
+4. CRITICAL STRUCTURAL RULE: 'E' MUST be placed on the far RIGHT side of the map (near the last column).
+5. Ensure a logically possible path from 'S' to 'E'. Maximum jump height is 3 tiles. Do NOT block paths entirely with Spikes or Bombs. Ensure all rings are reachable.
+6. RETURN ONLY RAW JSON matching this exact structure: {"levelName": "Name", "map": ["11...11", "10...E1"]}`;
+
+  const payload = {
+    model: "google/gemini-2.0-flash-lite-preview-02-05:free",
+    messages: [
+      { role: "system", content: systemInstruction },
+      { role: "user", content: userPrompt }
+    ],
+    response_format: { type: "json_object" }
+  };
+
+  try {
+    const response = await fetch(url, { 
+        method: "POST", 
+        headers: { 
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + atob(obscureKey),
+            "HTTP-Referer": window.location.href,
+            "X-Title": "Old Bounce"
+        }, 
+        body: JSON.stringify(payload) 
+    });
+    if (!response.ok) throw new Error("API Error");
+    const data = await response.json();
+    let content = data.choices[0].message.content;
+    content = content.replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();
+    return JSON.parse(content);
+  } catch (err) {
+    if (retryCount < 4) {
+      await new Promise(r => setTimeout(r, mult(Math.pow(2, retryCount), 1000)));
+      return generateCustomLevelAPI(userPrompt, retryCount + 1);
+    }
+    throw err;
+  }
+}
+
+let aiTimerInterval;
+
+window.submitAiLevel = async function(e) {
+  if(e) e.stopPropagation();
+  const promptText = aiPrompt.value.trim();
+  if(!promptText) return;
+
+  if (!audioCtx) audioCtx = new AudioContext();
+
+  btnSubmitAi.disabled = true;
+  aiLoadingContainer.style.display = 'flex';
+  aiError.style.display = 'none';
+
+  let secondsLeft = 15;
+  etaTimer.innerText = secondsLeft + 's';
+  aiTimerInterval = setInterval(() => {
+    if (secondsLeft > 1) {
+      secondsLeft--;
+      etaTimer.innerText = secondsLeft + 's';
+    } else {
+      etaTimer.innerText = "almost done...";
+    }
+  }, 1000);
+
+  try {
+    let validMap = null;
+    let attempts = 0;
+    
+    while(!validMap && attempts < 3) {
+        attempts++;
+        const generated = await generateCustomLevelAPI(promptText);
+        
+        let mapData = generated.map;
+        let basicValid = mapData && mapData.length > 0 && mapData.some(row => row.includes('S')) && mapData.some(row => row.includes('E'));
+        
+        if(basicValid) {
+            let maxLen = Math.max.apply(null, mapData.map(r => r.length));
+            mapData = mapData.map(r => r.padEnd(maxLen, '1'));
+            
+            if(isMapValid(mapData)) {
+                validMap = mapData;
+            }
+        }
+    }
+    
+    if(!validMap) throw new Error("Blocked Level. Generating failed to find clear path.");
+
+    aiMapCache = validMap;
+    gameMode = 'ai';
+    
+    closePrompt();
+    setTimeout(() => {
+       loadLevelData(aiMapCache, true);
+    }, 400);
+
+  } catch(err) {
+    console.error(err);
+    aiError.style.display = 'block';
+  } finally {
+    clearInterval(aiTimerInterval);
+    btnSubmitAi.disabled = false;
+    aiLoadingContainer.style.display = 'none';
+  }
+}
+
+window.startGame = function(e) {
+  if(e) e.stopPropagation();
+  if (!audioCtx) audioCtx = new AudioContext();
+  
+  if (gameState === 'start' || gameState === 'win') {
+    gameMode = 'campaign';
+    currentLevel = 0; 
+    loadLevel(currentLevel);
+  }
+}
+
+function die() {
+  playSound('explosion');
+  if(gameMode === 'ai') {
+      loadLevelData(aiMapCache, true);
+  } else {
+      loadLevel(currentLevel);
+  }
+}
+
+function triggerInterstitial() {
+  gameState = 'interstitial';
+  interstitialTimer = 0;
+  playSound('cheer');
+  
+  particles = [];
+  for(let i=0; i<120; i++) {
+    particles.push({
+      x: ball.x + mult(Math.random(), 20) - 10, 
+      y: ball.y + mult(Math.random(), 20) - 10,
+      vx: mult(Math.random() - 0.5, 20),
+      vy: mult(Math.random() - 1, 22) - 4,
+      color: ['rgb(255, 71, 87)', 'rgb(46, 213, 115)', 'rgb(254, 202, 87)', 'rgb(168, 85, 247)', 'rgb(116, 185, 255)', 'rgb(255, 255, 255)'][Math.floor(mult(Math.random(), 6))],
+      life: 1.0 + mult(Math.random(), 2.0)
+    });
+  }
+  
+  if(gameMode === 'ai') {
+      interLevel.innerText = "AI Level Cleared!";
+      interMood.innerText = "Great Job!";
+      interUI.style.opacity = '1';
+      return;
+  }
+  
+  let nextLvl = currentLevel + 2;
+  let mood = "Let's Go!";
+  if (nextLvl > 10) { interLevel.innerText = "Game Complete!"; mood = "Old Bounce Master!"; }
+  else {
+    interLevel.innerText = "Level " + nextLvl;
+    const moods = ["Awesome!", "Bouncy!", "Keep Going!", "Watch Out!", "Perfect!"];
+    mood = moods[currentLevel % moods.length];
+  }
+  interMood.innerText = mood;
+  interUI.style.opacity = '1';
+}
+
+function isTrapActive() {
+  return Math.floor(mult(time, 1.5)) % 2 === 0;
+}
+
+function checkCollisions() {
+  ball.isGrounded = false;
+  onConveyor = 0;
+  const br = ball.radius;
+  
+  ball.x += ball.vx;
+  let startC = Math.floor((ball.x - br) / (1/TILE_SIZE));
+  let endC = Math.floor((ball.x + br) / (1/TILE_SIZE));
+  let startR = Math.floor((ball.y - br) / (1/TILE_SIZE));
+  let endR = Math.floor((ball.y + br) / (1/TILE_SIZE));
+
+  for (let r = startR; r <= endR; r++) {
+    for (let c = startC; c <= endC; c++) {
+      if (r < 0 || r >= map.length || c < 0 || c >= map[0].length) continue;
+      const t = map[r][c];
+      const tx = mult(c, TILE_SIZE), ty = mult(r, TILE_SIZE);
+      
+      const isSolid = t === 1 || t === 6 || t === 7 || (t === 8 && isTrapActive());
+      
+      if (isSolid && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        if (ball.vx > 0) { ball.x = tx - br; ball.vx = mult(ball.vx, BOUNCE_FACTOR); }
+        else if (ball.vx < 0) { ball.x = tx + TILE_SIZE + br; ball.vx = mult(ball.vx, BOUNCE_FACTOR); }
+      } else if (t === 2 && aabb(ball.x, ball.y, br - 6, tx + 8, ty + 16, TILE_SIZE - 16, TILE_SIZE - 16)) {
+        die(); return;
+      } else if (t === 5 && aabb(ball.x, ball.y, br, tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10)) {
+        die(); return;
+      } else if (t === 3 && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        map[r][c] = 0; ringsCollected++; playSound('ring'); ringsEl.innerText = ringsCollected + '/' + ringsTotal;
+        if (ringsCollected === ringsTotal) playSound('door');
+      } else if (t === 4 && ringsCollected >= ringsTotal && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        triggerInterstitial(); return;
+      }
+    }
+  }
+
+  ball.vy += GRAVITY;
+  ball.y += ball.vy;
+  startC = Math.floor((ball.x - br) / (1/TILE_SIZE));
+  endC = Math.floor((ball.x + br) / (1/TILE_SIZE));
+  startR = Math.floor((ball.y - br) / (1/TILE_SIZE));
+  endR = Math.floor((ball.y + br) / (1/TILE_SIZE));
+
+  for (let r = startR; r <= endR; r++) {
+    for (let c = startC; c <= endC; c++) {
+      if (r < 0 || r >= map.length || c < 0 || c >= map[0].length) continue;
+      const t = map[r][c];
+      const tx = mult(c, TILE_SIZE), ty = mult(r, TILE_SIZE);
+      
+      const isSolid = t === 1 || t === 6 || t === 7 || (t === 8 && isTrapActive());
+      
+      if (isSolid && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        if (ball.vy > 0) {
+          ball.y = ty - br; 
+          if (ball.vy > 3) { playSound('bounce'); ball.squash = 1.4; ball.stretch = 0.6; }
+          ball.vy = mult(ball.vy, BOUNCE_FACTOR);
+          if (Math.abs(ball.vy) < 1.5) { ball.vy = 0; ball.isGrounded = true; }
+          if (t === 6) onConveyor = -1;
+          if (t === 7) onConveyor = 1;
+        } else if (ball.vy < 0) { 
+          ball.y = ty + TILE_SIZE + br; ball.vy = mult(ball.vy, BOUNCE_FACTOR); 
+        }
+      } else if (t === 2 && aabb(ball.x, ball.y, br - 6, tx + 8, ty + 16, TILE_SIZE - 16, TILE_SIZE - 16)) {
+        die(); return;
+      } else if (t === 5 && aabb(ball.x, ball.y, br, tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10)) {
+        die(); return;
+      } else if (t === 3 && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        map[r][c] = 0; ringsCollected++; playSound('ring'); ringsEl.innerText = ringsCollected + '/' + ringsTotal;
+        if (ringsCollected === ringsTotal) playSound('door');
+      } else if (t === 4 && ringsCollected >= ringsTotal && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        triggerInterstitial(); return;
+      }
+    }
+  }
+}
+
+function update() {
+  if (gameState === 'interstitial') {
+    interstitialTimer += 0.016;
+    
+    ball.y -= mult(Math.abs(Math.sin(mult(time, 12))), 8); 
+    ball.angle += 0.2; 
+    ball.stretch = 1 + mult(Math.abs(Math.cos(mult(time, 12))), 0.4);
+    ball.squash = 1 - mult(Math.abs(Math.cos(mult(time, 12))), 0.15);
+
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.35; 
+      p.life -= 0.015;
+    });
+
+    if (interstitialTimer >= 4.0) { 
+      if(gameMode === 'ai') {
+          gameState = 'start';
+          interUI.style.opacity = '0';
+          document.getElementById('msgTitle').innerText = 'AI LEVEL BEATEN';
+          document.getElementById('msgSub').innerText = 'Select a Game Mode';
+          openPrompt();
+      } else {
+          currentLevel++;
+          loadLevel(currentLevel);
+      }
+    }
+    return;
+  }
+  
+  if (gameState !== 'play') return;
+  
+  if (keys.left) ball.vx -= MOVE_ACCEL;
+  if (keys.right) ball.vx += MOVE_ACCEL;
+  
+  ball.vx = mult(ball.vx, ball.isGrounded ? FRICTION_GROUND : FRICTION_AIR);
+  
+  if (onConveyor !== 0) {
+    ball.vx += mult(onConveyor, 1.5);
+  }
+  
+  if (ball.vx > MAX_SPEED) ball.vx = MAX_SPEED;
+  if (ball.vx < -MAX_SPEED) ball.vx = -MAX_SPEED;
+  
+  if (ball.isGrounded) ball.jumps = 0;
+
+  if (keys.up && !keys.jumpPressed && ball.jumps < 2) {
+    ball.vy = JUMP_FORCE;
+    ball.squash = 0.6; ball.stretch = 1.4;
+    playSound('jump'); 
+    ball.isGrounded = false;
+    ball.jumps++;
+    keys.jumpPressed = true;
+  }
+  if (!keys.up) keys.jumpPressed = false;
+  
+  checkCollisions();
+  if (ball.y > map.length / (1/TILE_SIZE) + 200) { die(); return; }
+  
+  let targetStretch = ball.isGrounded ? 1 : 1 + mult(Math.abs(ball.vy), 0.015);
+  let targetSquash = ball.isGrounded ? 1 : 1 - mult(Math.abs(ball.vy), 0.01);
+  ball.stretch += mult((targetStretch - ball.stretch), 0.2);
+  ball.squash += mult((targetSquash - ball.squash), 0.2);
+  ball.angle += mult(ball.vx, 0.06);
+}
+
+let camX = 0, camY = 0;
+
+function draw() {
+  ctx.clearRect(0, 0, width, height);
+  time += 0.016;
+  
+  const bgGrad = ctx.createLinearGradient(0, 0, 0, height);
+  bgGrad.addColorStop(0, 'rgb(11, 19, 32)');
+  bgGrad.addColorStop(1, 'rgb(30, 41, 59)');
+  ctx.fillStyle = bgGrad;
+  ctx.fillRect(0, 0, width, height);
+  
+  if (gameState === 'start' || gameState === 'win') return;
+  
+  ctx.save();
+  let targetCamX = width / 2 - ball.x;
+  let targetCamY = height / 2 - ball.y;
+  camX += mult((targetCamX - camX), 0.1);
+  camY += mult((targetCamY - camY), 0.1);
+  ctx.translate(camX, camY);
+  
+  const trapActive = isTrapActive();
+
+  let startCol = Math.floor(-camX / (1/TILE_SIZE)) - 2;
+  let endCol = startCol + Math.ceil(width / (1/TILE_SIZE)) + 4;
+  let startRow = Math.floor(-camY / (1/TILE_SIZE)) - 2;
+  let endRow = startRow + Math.ceil(height / (1/TILE_SIZE)) + 4;
+
+  startCol = Math.max(0, startCol);
+  endCol = Math.min(map[0].length, endCol);
+  startRow = Math.max(0, startRow);
+  endRow = Math.min(map.length, endRow);
+
+  for (let r = startRow; r < endRow; r++) {
+    for (let c = startCol; c < endCol; c++) {
+      const t = map[r][c];
+      if (t === 0) continue;
+      const tx = mult(c, TILE_SIZE), ty = mult(r, TILE_SIZE);
+      
+      if (t === 1 || t === 6 || t === 7 || t === 8) {
+        if (t === 8 && !trapActive) {
+          ctx.fillStyle = 'rgba(30, 41, 59, 0.2)';
+          ctx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+          continue;
+        }
+
+        ctx.fillStyle = 'rgb(15, 23, 42)';
+        ctx.beginPath();
+        ctx.moveTo(tx, ty + TILE_SIZE); ctx.lineTo(tx + TILE_SIZE, ty + TILE_SIZE);
+        ctx.lineTo(tx + TILE_SIZE, ty + TILE_SIZE + 10); ctx.lineTo(tx, ty + TILE_SIZE + 10);
+        ctx.fill();
+        
+        ctx.fillStyle = t === 8 ? 'rgb(71, 85, 105)' : 'rgb(30, 41, 59)';
+        ctx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+        
+        if (t === 6 || t === 7) {
+          ctx.fillStyle = 'rgba(255,255,255,0.2)';
+          let offset = Math.floor(mult(time, 30)) % TILE_SIZE;
+          if (t === 6) offset = TILE_SIZE - offset;
+          ctx.fillRect(tx + offset, ty + 10, 5, TILE_SIZE - 20);
+        }
+
+        ctx.fillStyle = 'rgba(255,255,255,0.1)'; ctx.fillRect(tx, ty, TILE_SIZE, 3);
+        ctx.fillStyle = 'rgba(255,255,255,0.05)'; ctx.fillRect(tx, ty, 3, TILE_SIZE);
+      } else if (t === 2) {
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.beginPath();
+        ctx.moveTo(tx + TILE_SIZE/2, ty + 8); ctx.lineTo(tx + TILE_SIZE - 4, ty + TILE_SIZE + 5); ctx.lineTo(tx + 4, ty + TILE_SIZE + 5);
+        ctx.fill();
+        const sGrad = ctx.createLinearGradient(tx, ty, tx, ty + TILE_SIZE);
+        sGrad.addColorStop(0, 'rgb(255, 71, 87)'); sGrad.addColorStop(1, 'rgb(192, 57, 43)');
+        ctx.fillStyle = sGrad;
+        ctx.beginPath();
+        ctx.moveTo(tx + TILE_SIZE/2, ty + 4); ctx.lineTo(tx + TILE_SIZE - 4, ty + TILE_SIZE); ctx.lineTo(tx + 4, ty + TILE_SIZE);
+        ctx.fill();
+      } else if (t === 5) {
+        const pulse = mult(Math.sin(mult(time, 5)), 2);
+        ctx.fillStyle = 'rgb(17, 17, 17)';
+        ctx.beginPath(); ctx.arc(tx + TILE_SIZE/2, ty + TILE_SIZE/2, TILE_SIZE/2.5, 0, mult(Math.PI, 2)); ctx.fill();
+        ctx.fillStyle = 'rgb(255, 71, 87)';
+        ctx.beginPath(); ctx.arc(tx + TILE_SIZE/2, ty + TILE_SIZE/2, TILE_SIZE/6 + pulse, 0, mult(Math.PI, 2)); ctx.fill();
+        ctx.strokeStyle = 'rgb(255, 255, 255)'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(tx + TILE_SIZE/2, ty + 10); ctx.lineTo(tx + TILE_SIZE/2 + 10, ty + 2); ctx.stroke();
+      } else if (t === 3) {
+        const floatY = mult(Math.sin(mult(time, 3) + c), 4);
+        ctx.strokeStyle = 'rgb(254, 202, 87)'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(tx + TILE_SIZE/2, ty + TILE_SIZE/2 + floatY, TILE_SIZE/3, 0, mult(Math.PI, 2)); ctx.stroke();
+        ctx.strokeStyle = 'rgb(255, 159, 67)'; ctx.lineWidth = 2; ctx.stroke();
+      } else if (t === 4) {
+        const isOpen = ringsCollected >= ringsTotal;
+        ctx.fillStyle = isOpen ? 'rgb(46, 213, 115)' : 'rgb(255, 71, 87)';
+        ctx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+        ctx.fillStyle = 'rgb(15, 23, 42)';
+        if (isOpen) {
+          ctx.fillRect(tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12);
+          ctx.fillStyle = 'rgba(46, 213, 115, 0.2)';
+          ctx.fillRect(tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12);
+        } else {
+          ctx.fillRect(tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12);
+          ctx.fillStyle = 'rgb(149, 165, 166)';
+          ctx.fillRect(tx + 12, ty + 6, 4, TILE_SIZE - 12);
+          ctx.fillRect(tx + 29, ty + 6, 4, TILE_SIZE - 12);
+        }
+      }
+    }
+  }
+  
+  ctx.save();
+  ctx.translate(ball.x, ball.y);
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath(); ctx.arc(0, ball.radius + 4, mult(ball.radius, 0.8), 0, mult(Math.PI, 2)); ctx.fill();
+  ctx.rotate(ball.angle);
+  ctx.scale(ball.squash, ball.stretch);
+  const bGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, ball.radius);
+  bGrad.addColorStop(0, 'rgb(255, 107, 129)'); bGrad.addColorStop(0.7, 'rgb(255, 71, 87)'); bGrad.addColorStop(1, 'rgb(192, 57, 43)');
+  ctx.fillStyle = bGrad;
+  ctx.beginPath(); ctx.arc(0, 0, ball.radius, 0, mult(Math.PI, 2)); ctx.fill();
+  ctx.rotate(-ball.angle);
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.beginPath(); ctx.arc(-mult(ball.radius, 0.3), -mult(ball.radius, 0.3), mult(ball.radius, 0.25), 0, mult(Math.PI, 2)); ctx.fill();
+  ctx.restore();
+  
+  if (gameState === 'interstitial') {
+    particles.forEach(p => {
+      if (p.life > 0) {
+        ctx.globalAlpha = Math.min(1, p.life);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 8, 8);
+      }
+    });
+    ctx.globalAlpha = 1.0;
+  }
+  
+  ctx.restore();
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+
+loop();
+</script>
+</body>
+</html>
