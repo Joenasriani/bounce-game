@@ -112,7 +112,7 @@ const interUI = document.getElementById('interstitialUI');
 const interLevel = document.getElementById('interLevel');
 const interMood = document.getElementById('interMood');
 
-const mult = (a, b) => a / (1 / b);
+const mult = (a, b) => a * b;
 
 let width, height;
 function resize() {
@@ -366,8 +366,8 @@ function loadLevelData(layoutMap, isAI) {
       else if (char === 'T') row.push(8);
       else if (char === 'S') { 
         row.push(0); 
-        ball.x = x / (1/TILE_SIZE) + TILE_SIZE/2; 
-        ball.y = y / (1/TILE_SIZE) + TILE_SIZE/2; 
+        ball.x = x * TILE_SIZE + TILE_SIZE / 2; 
+        ball.y = y * TILE_SIZE + TILE_SIZE / 2; 
       }
       else row.push(0);
     }
@@ -632,18 +632,6 @@ function triggerInterstitial() {
   interstitialTimer = 0;
   playSound('cheer');
   
-  particles = [];
-  for(let i=0; i<120; i++) {
-    particles.push({
-      x: ball.x + mult(Math.random(), 20) - 10, 
-      y: ball.y + mult(Math.random(), 20) - 10,
-      vx: mult(Math.random() - 0.5, 20),
-      vy: mult(Math.random() - 1, 22) - 4,
-      color: ['rgb(255, 71, 87)', 'rgb(46, 213, 115)', 'rgb(254, 202, 87)', 'rgb(168, 85, 247)', 'rgb(116, 185, 255)', 'rgb(255, 255, 255)'][Math.floor(mult(Math.random(), 6))],
-      life: 1.0 + mult(Math.random(), 2.0)
-    });
-  }
-  
   if(gameMode === 'ai') {
       interLevel.innerText = "AI Level Cleared!";
       interMood.innerText = "Great Job!";
@@ -667,16 +655,24 @@ function isTrapActive() {
   return Math.floor(mult(time, 1.5)) % 2 === 0;
 }
 
+function aabb(bx, by, br, tx, ty, tw, th) {
+  const cx = Math.max(tx, Math.min(bx, tx + tw));
+  const cy = Math.max(ty, Math.min(by, ty + th));
+  const dx = bx - cx; 
+  const dy = by - cy;
+  return (dx * dx + dy * dy) < (br * br);
+}
+
 function checkCollisions() {
   ball.isGrounded = false;
   onConveyor = 0;
   const br = ball.radius;
   
   ball.x += ball.vx;
-  let startC = Math.floor((ball.x - br) / (1/TILE_SIZE));
-  let endC = Math.floor((ball.x + br) / (1/TILE_SIZE));
-  let startR = Math.floor((ball.y - br) / (1/TILE_SIZE));
-  let endR = Math.floor((ball.y + br) / (1/TILE_SIZE));
+  let startC = Math.floor((ball.x - br) / TILE_SIZE);
+  let endC = Math.floor((ball.x + br) / TILE_SIZE);
+  let startR = Math.floor((ball.y - br) / TILE_SIZE);
+  let endR = Math.floor((ball.y + br) / TILE_SIZE);
 
   for (let r = startR; r <= endR; r++) {
     for (let c = startC; c <= endC; c++) {
@@ -704,10 +700,10 @@ function checkCollisions() {
 
   ball.vy += GRAVITY;
   ball.y += ball.vy;
-  startC = Math.floor((ball.x - br) / (1/TILE_SIZE));
-  endC = Math.floor((ball.x + br) / (1/TILE_SIZE));
-  startR = Math.floor((ball.y - br) / (1/TILE_SIZE));
-  endR = Math.floor((ball.y + br) / (1/TILE_SIZE));
+  startC = Math.floor((ball.x - br) / TILE_SIZE);
+  endC = Math.floor((ball.x + br) / TILE_SIZE);
+  startR = Math.floor((ball.y - br) / TILE_SIZE);
+  endR = Math.floor((ball.y + br) / TILE_SIZE);
 
   for (let r = startR; r <= endR; r++) {
     for (let c = startC; c <= endC; c++) {
@@ -746,19 +742,16 @@ function update() {
   if (gameState === 'interstitial') {
     interstitialTimer += 0.016;
     
-    ball.y -= mult(Math.abs(Math.sin(mult(time, 12))), 8); 
-    ball.angle += 0.2; 
-    ball.stretch = 1 + mult(Math.abs(Math.cos(mult(time, 12))), 0.4);
-    ball.squash = 1 - mult(Math.abs(Math.cos(mult(time, 12))), 0.15);
+    ball.vx = mult(ball.vx, 0.85);
+    ball.vy = mult(ball.vy, 0.85);
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    
+    ball.stretch = Math.max(0, ball.stretch - 0.025);
+    ball.squash = Math.max(0, ball.squash - 0.025);
+    ball.angle += 0.15;
 
-    particles.forEach(p => {
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.35; 
-      p.life -= 0.015;
-    });
-
-    if (interstitialTimer >= 4.0) { 
+    if (interstitialTimer >= 1.8) { 
       if(gameMode === 'ai') {
           gameState = 'start';
           interUI.style.opacity = '0';
@@ -800,7 +793,7 @@ function update() {
   if (!keys.up) keys.jumpPressed = false;
   
   checkCollisions();
-  if (ball.y > map.length / (1/TILE_SIZE) + 200) { die(); return; }
+  if (ball.y > map.length * TILE_SIZE + 200) { die(); return; }
   
   let targetStretch = ball.isGrounded ? 1 : 1 + mult(Math.abs(ball.vy), 0.015);
   let targetSquash = ball.isGrounded ? 1 : 1 - mult(Math.abs(ball.vy), 0.01);
@@ -832,10 +825,10 @@ function draw() {
   
   const trapActive = isTrapActive();
 
-  let startCol = Math.floor(-camX / (1/TILE_SIZE)) - 2;
-  let endCol = startCol + Math.ceil(width / (1/TILE_SIZE)) + 4;
-  let startRow = Math.floor(-camY / (1/TILE_SIZE)) - 2;
-  let endRow = startRow + Math.ceil(height / (1/TILE_SIZE)) + 4;
+  let startCol = Math.floor(-camX / TILE_SIZE) - 2;
+  let endCol = startCol + Math.ceil(width / TILE_SIZE) + 4;
+  let startRow = Math.floor(-camY / TILE_SIZE) - 2;
+  let endRow = startRow + Math.ceil(height / TILE_SIZE) + 4;
 
   startCol = Math.max(0, startCol);
   endCol = Math.min(map[0].length, endCol);
@@ -930,17 +923,6 @@ function draw() {
   ctx.fillStyle = 'rgba(255,255,255,0.6)';
   ctx.beginPath(); ctx.arc(-mult(ball.radius, 0.3), -mult(ball.radius, 0.3), mult(ball.radius, 0.25), 0, mult(Math.PI, 2)); ctx.fill();
   ctx.restore();
-  
-  if (gameState === 'interstitial') {
-    particles.forEach(p => {
-      if (p.life > 0) {
-        ctx.globalAlpha = Math.min(1, p.life);
-        ctx.fillStyle = p.color;
-        ctx.fillRect(p.x, p.y, 8, 8);
-      }
-    });
-    ctx.globalAlpha = 1.0;
-  }
   
   ctx.restore();
 }
