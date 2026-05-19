@@ -1,12 +1,3 @@
 {
-  "name": "bounce-game-ai-vercel",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "vercel dev"
-  },
-  "engines": {
-    "node": ">=18"
-  }
+  "type": "module"
 }

@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Old Bounce</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap');
+
   :root {
+    --font-title: 'Fredoka', 'Arial Rounded MT Bold', 'Trebuchet MS', system-ui, sans-serif;
+    --font-text: 'Fredoka', 'Arial Rounded MT Bold', 'Trebuchet MS', system-ui, sans-serif;
     --safe-top: env(safe-area-inset-top, 0px);
     --safe-right: env(safe-area-inset-right, 0px);
     --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -27,12 +30,14 @@
     overflow: hidden;
     background: rgb(11, 19, 32);
     touch-action: none;
-    font-family: 'Teko', sans-serif;
-    font-weight: 300;
-    letter-spacing: 1px;
+    font-family: var(--font-text);
+    font-weight: 500;
+    letter-spacing: clamp(0.25px, 0.08vmin, 0.8px);
     color: rgb(252, 232, 232);
     user-select: none;
     overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
   }
   body { min-height: 100dvh; }
   canvas { display: block; width: 100vw; height: 100dvh; }
@@ -53,6 +58,7 @@
     gap: clamp(8px, 1.8vmin, 18px);
     align-items: flex-start;
     text-transform: uppercase;
+    font-family: var(--font-text);
   }
   .ui-badge {
     background: rgba(255,255,255,0.05);
@@ -117,18 +123,45 @@
 
   .interstitial {
     position: absolute;
-    top: clamp(12%, 20vh, 22%);
-    left: 0;
-    width: 100%;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     color: rgb(252, 232, 232);
     opacity: 0;
-    transition: opacity 0.5s;
+    transition: opacity 0.5s ease;
     pointer-events: none;
-    padding: 0 calc(var(--safe-right) + 20px) 0 calc(var(--safe-left) + 20px);
+    padding: calc(var(--safe-top) + 24px) calc(var(--safe-right) + clamp(18px, 5vw, 56px)) calc(var(--safe-bottom) + 24px) calc(var(--safe-left) + clamp(18px, 5vw, 56px));
+    z-index: 18;
   }
-  .inter-title { font-size: clamp(42px, 10vmin, 90px); font-weight: 400; letter-spacing: clamp(3px, 0.7vmin, 6px); text-shadow: 0 10px 20px rgba(0,0,0,0.8); margin-bottom: 0; color: rgb(255, 71, 87); text-transform: uppercase; line-height: 0.95; }
-  .inter-sub { font-size: clamp(22px, 5vmin, 36px); color: rgb(255, 107, 129); font-weight: 300; text-shadow: 0 4px 10px rgba(0,0,0,0.8); text-transform: uppercase; letter-spacing: 2px; line-height: 1; }
+  .inter-title {
+    font-family: var(--font-title);
+    font-size: clamp(56px, 14vmin, 142px);
+    font-weight: 400;
+    letter-spacing: clamp(1px, 0.45vmin, 5px);
+    text-shadow: 0 12px 28px rgba(0,0,0,0.86), 0 0 2px rgba(255,255,255,0.28);
+    margin: 0;
+    color: rgb(255, 71, 87);
+    text-transform: uppercase;
+    line-height: 0.9;
+    max-width: min(94vw, 1100px);
+    overflow-wrap: balance;
+  }
+  .inter-sub {
+    font-family: var(--font-title);
+    font-size: clamp(24px, 6vmin, 54px);
+    color: rgb(255, 207, 82);
+    font-weight: 400;
+    text-shadow: 0 6px 16px rgba(0,0,0,0.86), 0 0 2px rgba(255,255,255,0.24);
+    text-transform: uppercase;
+    letter-spacing: clamp(0.8px, 0.28vmin, 3px);
+    line-height: 1;
+    margin-top: clamp(8px, 1.8vmin, 18px);
+    max-width: min(92vw, 900px);
+    overflow-wrap: balance;
+  }
 
   .msg-box {
     position: relative;
@@ -144,23 +177,58 @@
     max-width: min(92vw, 500px);
     max-height: none;
     overflow: visible;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: center;
   }
-  .msg-title { font-size: clamp(34px, 7vmin, 56px); font-weight: 400; margin: 0 0 clamp(6px, 1.4vmin, 10px); color: rgb(255, 71, 87); text-transform: uppercase; letter-spacing: clamp(2px, 0.55vmin, 3px); line-height: 0.92; }
-  .msg-sub { font-size: clamp(18px, 3.8vmin, 24px); color: rgb(255, 107, 129); margin: 0 0 clamp(14px, 3vmin, 25px); font-weight: 300; line-height: 1.05; }
-  .forge-title { font-size: clamp(30px, 6.5vmin, 48px); color: rgb(255, 71, 87); line-height: 0.95; margin-bottom: clamp(8px, 2vmin, 10px); }
+  .msg-title {
+    font-family: var(--font-title);
+    font-size: clamp(34px, 7vmin, 56px);
+    font-weight: 400;
+    margin: 0 0 clamp(6px, 1.4vmin, 10px);
+    color: rgb(255, 71, 87);
+    text-transform: uppercase;
+    letter-spacing: clamp(1.5px, 0.42vmin, 3px);
+    line-height: 0.92;
+    text-shadow: 0 7px 16px rgba(0,0,0,0.72), 0 0 1px rgba(255,255,255,0.32);
+  }
+  .msg-sub {
+    font-family: var(--font-title);
+    font-size: clamp(18px, 3.8vmin, 24px);
+    color: rgb(255, 107, 129);
+    margin: 0 0 clamp(14px, 3vmin, 25px);
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: clamp(0.8px, 0.25vmin, 1.6px);
+    text-shadow: 0 4px 10px rgba(0,0,0,0.72), 0 0 1px rgba(255,255,255,0.22);
+  }
+  .forge-title {
+    font-family: var(--font-title);
+    font-size: clamp(30px, 6.5vmin, 48px);
+    color: rgb(255, 71, 87);
+    line-height: 0.95;
+    margin-bottom: clamp(8px, 2vmin, 10px);
+    text-shadow: 0 7px 16px rgba(0,0,0,0.72), 0 0 1px rgba(255,255,255,0.32);
+  }
 
   .menu-btn,
   .gen-btn {
     border-radius: clamp(10px, 2vmin, 12px);
-    font-size: clamp(19px, 3.8vmin, 26px);
-    font-family: 'Teko', sans-serif;
-    letter-spacing: 1px;
+    font-size: clamp(18px, 3.6vmin, 25px);
+    font-family: var(--font-text);
+    letter-spacing: clamp(0.25px, 0.12vmin, 0.8px);
     text-transform: uppercase;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.55);
     width: 100%;
     min-height: clamp(42px, 7vmin, 54px);
     line-height: 1;
     cursor: pointer;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
   }
   .menu-btn {
     background: rgba(255, 71, 87, 0.05);
@@ -199,16 +267,34 @@
     outline: none;
     transition: border-color 0.2s;
     text-align: center;
-    font-family: 'Teko', sans-serif;
+    font-family: var(--font-text);
     font-weight: 300;
     letter-spacing: 1px;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.5);
   }
   .ai-input:focus { border-color: rgb(255, 71, 87); box-shadow: 0 0 10px rgba(255, 71, 87, 0.3); }
 
   .loading-container { display: none; flex-direction: column; align-items: center; margin-top: clamp(10px, 2.2vmin, 20px); }
   .spinner { width: clamp(32px, 6vmin, 45px); height: clamp(32px, 6vmin, 45px); border: 4px solid rgba(255, 71, 87, 0.2); border-top: 4px solid rgb(255, 71, 87); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: clamp(6px, 1.5vmin, 10px); }
-  .loading-text { color: rgb(255, 107, 129); font-weight: 400; font-size: clamp(18px, 3.6vmin, 26px); letter-spacing: 2px; line-height: 1; }
-  .error-text { display: none; color: rgb(255, 71, 87); margin-top: clamp(8px, 1.8vmin, 15px); font-weight: 400; font-size: clamp(18px, 3.6vmin, 26px); line-height: 1.05; }
+  .loading-text {
+    font-family: var(--font-text);
+    color: rgb(255, 107, 129);
+    font-weight: 400;
+    font-size: clamp(18px, 3.6vmin, 26px);
+    letter-spacing: clamp(0.7px, 0.2vmin, 1.8px);
+    line-height: 1;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.7);
+  }
+  .error-text {
+    display: none;
+    font-family: var(--font-text);
+    color: rgb(255, 71, 87);
+    margin-top: clamp(8px, 1.8vmin, 15px);
+    font-weight: 400;
+    font-size: clamp(18px, 3.6vmin, 26px);
+    line-height: 1.05;
+    text-shadow: 0 3px 8px rgba(0,0,0,0.7);
+  }
 
   @media (max-width: 520px) {
     :root { --control-size: clamp(54px, 16vw, 66px); --control-gap: clamp(8px, 3vw, 14px); }
@@ -231,8 +317,8 @@
     .loading-container { margin-top: 8px; }
     .spinner { width: 30px; height: 30px; margin-bottom: 5px; }
     .loading-text, .error-text { font-size: clamp(16px, 5.5vh, 21px); }
-    .inter-title { font-size: clamp(34px, 13vh, 68px); }
-    .inter-sub { font-size: clamp(19px, 7vh, 30px); }
+    .inter-title { font-size: clamp(46px, 15vh, 86px); }
+    .inter-sub { font-size: clamp(22px, 7vh, 34px); }
   }
 
   @media (min-width: 900px) and (min-height: 700px) {
@@ -248,6 +334,7 @@
 <div class="ui">
   <div class="ui-badge">Level <span id="levelCounter">1</span></div>
   <div class="ui-badge" id="ringBadge">Rings: <span id="rings">0/0</span></div>
+  <div class="ui-badge" id="lifeBadge">Lives: <span id="lives">3</span></div>
 </div>
 
 <div class="overlay" id="startOverlay">
@@ -298,6 +385,7 @@ const ctx = canvas.getContext('2d');
 const levelEl = document.getElementById('levelCounter');
 const ringsEl = document.getElementById('rings');
 const ringBadge = document.getElementById('ringBadge');
+const livesEl = document.getElementById('lives');
 const startOverlay = document.getElementById('startOverlay');
 const promptOverlay = document.getElementById('promptOverlay');
 const aiPrompt = document.getElementById('aiPrompt');
@@ -338,9 +426,20 @@ function playSound(type) {
     gain.gain.setValueAtTime(0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
     osc.start(now); osc.stop(now + 0.1);
   } else if (type === 'ring') {
-    osc.type = 'square'; osc.frequency.setValueAtTime(800, now); osc.frequency.setValueAtTime(1200, now + 0.05);
+    // Required hoop: short, bright high chime.
+    osc.type = 'square'; osc.frequency.setValueAtTime(880, now); osc.frequency.setValueAtTime(1320, now + 0.05);
     gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0, now + 0.1);
     osc.start(now); osc.stop(now + 0.1);
+  } else if (type === 'crystal') {
+    // Checkpoint crystal: lower, warmer chime.
+    osc.type = 'triangle'; osc.frequency.setValueAtTime(520, now); osc.frequency.linearRampToValueAtTime(680, now + 0.18);
+    gain.gain.setValueAtTime(0.13, now); gain.gain.linearRampToValueAtTime(0, now + 0.22);
+    osc.start(now); osc.stop(now + 0.22);
+  } else if (type === 'life') {
+    // Extra life: compact 1-up style arpeggio.
+    osc.type = 'sine'; osc.frequency.setValueAtTime(660, now); osc.frequency.setValueAtTime(880, now + 0.07); osc.frequency.setValueAtTime(1320, now + 0.14);
+    gain.gain.setValueAtTime(0.14, now); gain.gain.linearRampToValueAtTime(0, now + 0.25);
+    osc.start(now); osc.stop(now + 0.25);
   } else if (type === 'door') {
     osc.type = 'square'; osc.frequency.setValueAtTime(200, now); osc.frequency.linearRampToValueAtTime(400, now + 0.4);
     gain.gain.setValueAtTime(0.2, now); gain.gain.linearRampToValueAtTime(0, now + 0.4);
@@ -356,6 +455,21 @@ function playSound(type) {
   }
 }
 
+function roundedRectPath(ctx, x, y, w, h, r) {
+  const radius = Math.min(r, w / 2, h / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + w - radius, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+  ctx.lineTo(x + w, y + h - radius);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+  ctx.lineTo(x + radius, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+}
+
 const TILE_SIZE = 45;
 const GRAVITY = 0.35;
 const FRICTION_GROUND = 0.80;
@@ -363,6 +477,11 @@ const FRICTION_AIR = 0.92;
 const JUMP_FORCE = -8.5;
 const MOVE_ACCEL = 1.2;
 const MAX_SPEED = 6.5;
+const FRAME_DT = 0.016;
+const MAX_SPIN_RATE = (Math.PI * 2) / 0.5; // 360 degrees per 0.5 seconds at max speed.
+const GROUND_SPIN_PER_SPEED = MAX_SPIN_RATE / MAX_SPEED;
+const AIR_SPIN_PER_SPEED = GROUND_SPIN_PER_SPEED * 0.7;
+const SPIN_STOP_THRESHOLD = 0.08;
 const BOUNCE_FACTOR = -0.35;
 
 let gameState = 'start'; 
@@ -375,6 +494,13 @@ let ringsCollected = 0;
 let time = 0;
 let interstitialTimer = 0;
 let onConveyor = 0;
+let proximityCharge = {};
+let fallingPlatforms = {};
+let checkpoint = null;
+let lives = 3;
+let speedBoostTimer = 0;
+let antiGravityTimer = 0;
+let activeWater = false;
 
 const levels = [
   [
@@ -388,138 +514,170 @@ const levels = [
     "1111111111111111111111111"
   ],
   [
-    "11111111111111111111111111",
-    "10000000000000000000000001",
-    "100000000000000000000000E1",
-    "10000000000000000000011111",
-    "10000000000000011110000001",
-    "10000000001110000000000001",
-    "10000011100000000000000001",
-    "1S000000000000001110000001",
-    "11110001110001110000001111",
-    "1111XX1111XXX111XXXXX11111",
-    "11111111111111111111111111"
+    "1111111111111111111111111111111111111111111111",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000E00001",
+    "1000000000000000000000000000001111111111111001",
+    "100000000000000000R000Z11111100000000000000001",
+    "1000000000000000111111000000000000000000000001",
+    "10S00R0001111110000000000000000000000000000001",
+    "1111111100000000000000000000000000000000000001",
+    "1111111111111111111111111111111111111111111111"
   ],
   [
-    "11111111111111111111111111",
-    "100000000000000000000000E1",
-    "10000000000000000000001111",
-    "10000000000000000011110001",
-    "10000000000000111100000001",
-    "100000000011110000000B0001",
-    "10000B00000000000000111111",
-    "1S01111000000B000000000001",
-    "11111111111111111111111111"
+    "111111111111111111111111111111111111111111111111111111",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000001",
+    "10S00000000000000000000000000000000000000000000000E001",
+    "11111111111000R00000000000000000000000000R000111111101",
+    "100000000000000000000000000000000000001111111000000001",
+    "100000000000111111100000000000000000000000000000000001",
+    "10000000000000000000000000R00D000JJJJ00000000000000001",
+    "100000000000000000001111111111110000000000000000000001",
+    "111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "11111111111111111111111111",
-    "1000000000R000000000000001",
-    "1000000011111000000R0000E1",
-    "1000R000000000011111101111",
-    "10111110000000000000000001",
-    "1000000000R0000000R0000001",
-    "1S000000111110011111000001",
-    "11111111111111111111111111"
+    "111111111111111111111111111111111111111111111111111111111111111111",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000R000V00000000000000000000000R00000E0001",
+    "100000000000000000000001111111111111110000000000011111111111111001",
+    "100000000000000000111110000000000000000000001111100000000000000001",
+    "100000000000001111000000000000000000111K11110000000000000000000001",
+    "10S0000R0011110000000D000R0000111111000000000000000000000000000001",
+    "111111111111111111111111111111000000000000000000000000000000000001",
+    "111111111111111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "11111111111111111111111111",
-    "100000000000000000000000E1",
-    "10000000000000000000001111",
-    "10000000000000000111110001",
-    "100000000000<<<<<000000001",
-    "10000000011100000000000001",
-    "10000>>>>>0000000000000001",
-    "10000000000000000000000001",
-    "100<<<<<<00000000000000001",
-    "10000000000000000000000001",
-    "1S000000000000000000000001",
-    "1111>>>>>>1111111111111111",
-    "11111111111111111111111111"
+    "11111111111111111111111111111111111111111111111111111111111111111111111111",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000R0000000000000000000000000000001",
+    "10000000000000000000000000000000000000111111111000000000000000000000000001",
+    "100000000000000000000000000000000H0000000000000000000000000000000000000001",
+    "100000000000000000000000000000111111100000000000011111111D1111111000R00E01",
+    "10S00000R0U11100000R000000O00000000000000000000N000000R0000000000011111111",
+    "11111111110000~~~~~~~~~~~~111100000000000000000011111111111111111000000001",
+    "11111111111111111111111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "11111111111111111111111111",
-    "100000000000000000000000E1",
-    "10000000000000000000111111",
-    "10000000000000000000000001",
-    "10000000000000000111001101",
-    "10000000000000000000000001",
-    "100000000000011110TTT00001",
-    "10000000000000000000000001",
-    "10000000011111100000000001",
-    "10000000000000000000000001",
-    "10000111111000000000000001",
-    "10000000000000000000000001",
-    "10S00000000000000000000001",
-    "11111111111111111111111111"
+    "1111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000R000E001",
+    "100000000000000000000000000000R00000000000000000000000000000000V000000111111111101",
+    "1000000000000000000000000011111111100000000000000000DR0000111111111110000000000001",
+    "10000000000000000000000000000000000000000000000000HHHHHH00000000000000000000000001",
+    "10000000000000000R00QQZQQ00000000000000R0000YYYY0000000000000000000000000000000001",
+    "10S00000R00000QQQQQ000000000000000001111111000000000000000000000000000000000000001",
+    "1111111111111000000000000000000000000000000000000000000000000000000000000000000001",
+    "1111111111111111111111111111111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "1111111111111111111111111111",
-    "10000000000000000000000000E1",
-    "1000000000000000000000001111",
-    "1000000000000000000000000001",
-    "1000000000000000000>>>>>0001",
-    "10000000000000000000000X0001",
-    "10000000000000<<<<<001111111",
-    "1000000000000000000000000001",
-    "100000000>>>>>00000000000001",
-    "1000000000000X00000000000001",
-    "10000<<<<<011111110000000001",
-    "1000000000000000000000000001",
-    "1S00000000000000000000000001",
-    "1111111111111111111111111111"
+    "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000001111111110000R00000011111000000000000000000000000000000001",
+    "1000000000000000000000111111111111111111111111111000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000111111111000000000000000000000000000000000000001",
+    "10000000000000000000000000000R000000D000000000000011111111000000000000000000000000000001",
+    "1000000000000000000000000011111111100000000000000000000000000000000000K000000O0000R0E001",
+    "100000000000000000000000000000000000000000000000000000000000R00P000000001111111111111101",
+    "1000000000000000000000000000000000000000000000000000000000111111111000000000000000000001",
+    "10S000R000000AR0001111111000000000000000000000000000000000000000000000000R00000000000001",
+    "1111111111111111100000000000000000000000000000000000000000000000000011111111111110000001",
+    "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "1111111111111111111111111111",
-    "10000000000000000000000000E1",
-    "1000000000000000000000111111",
-    "1000000000000000000000000001",
-    "1000000000000000001111111001",
-    "100000000000000000000000Z001",
-    "10000000000000111110TTT01111",
-    "1000000000000000000000000001",
-    "1000000001111110000000000001",
-    "1000000000000000000000000001",
-    "10000>>>>>>00000000000000001",
-    "1000000000000000000000000001",
-    "10S000000Z000000000000000001",
-    "1111111111111111111111111111"
+    "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000R0000E0001",
+    "1000000000000000000000000000000000000000000000000000000000000000000000D000000011111K111111111001",
+    "100000000000000000000000000000R0000000001111111110000000000RZ00011111111111000000000000000000001",
+    "10000000000000000000000R0000GGGG0000000000R00V000000R0000HHHHH0000000000000000000000000000000001",
+    "10000000000000000R0000GGGG00000000GGGG0000000000001111100000000000000000000000000000000000000001",
+    "10S0000R0000001111111000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "111111111111100000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "1111111111111111111111111111",
-    "10000000000000000000000000E1",
-    "1000000000000000000000001111",
-    "1000000000000000000011110001",
-    "1000000000000000111100000001",
-    "10000000000011110000000X0001",
-    "1000000011110000000001111111",
-    "100001110000000X000000000001",
-    "1001100000000111111100000001",
-    "1010000Z00000000000000000001",
-    "1011111111110000000000000001",
-    "1S00000000000000000000000001",
-    "1111111111111111111111111111"
+    "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000R000V0000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000011111111111111000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000R000L0000000011110000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000111111111111000000000000000000000R000000000000000000000000001",
+    "100000000000000000000000000000R000D000R00000000011100000000000000000000011111111100000000000000000000001",
+    "100000000000000000000000000011111111111110000000000000000000000000000000000000000000K0R00000000000000001",
+    "10000000000000000000000000000000000111000000000000000000000000000000000000000000001111111110000000000001",
+    "10S000R00000000R0000HHHHHH00000000000000000000000000000000000000000000000000000000000000000000O00R00E001",
+    "11111111111111111110000000000000000000000000000000000000000000000000000000000000000000000000111111111101",
+    "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
   ],
   [
-    "1111111111111111111111111111111111111111",
-    "1000000000000000000000000000000000000001",
-    "1000000000000000000000000000000000000001",
-    "10000000000000000000000000000000000000E1",
-    "1000000000000000000000000000000000111111",
-    "1000000000000000000000000000000R00000001",
-    "1000000000000000000000000000011111000001",
-    "1000000000000000000000000000000000000001",
-    "100000000000000000000Z000111111000000001",
-    "10000000000000000000TTT00000000000000001",
-    "100000000000000000000000000B000000000001",
-    "1000000000000000111111110000000000000001",
-    "10000000R00>>>>>00Z00X000000000000000001",
-    "1000011111000000001111110000000000000001",
-    "10S0000000000000000000000000000000000001",
-    "1111111111111111111111111111111111111111"
+    "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "10000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001",
+    "100000000000000000000000000000000000000000000000000000000000000000000RW000000000000000000000000000000000000000000001",
+    "1000000000000000000000000000000000000000000000000000V0R00000000000111111100000000000K0000000000000000000D000R0P0E001",
+    "10000000000000000000000000000000000000000000000000111111111000000000000000000000GRGG00000000000000001111111111111101",
+    "100000000000000000000000000000000RD000000000000000000000000K00000000000000GGGG00000000000000000RL0000000000000000001",
+    "10000000000000000000000000000111111110000000000R00000000000000000000000000000000000000000000HHHHHHH00000000000000001",
+    "10000000000000000000000000000000000000000000QQQQQ000000000000A000000000000000000000000YYYYY0000000000000000000000001",
+    "10S00R00U00000000R000000N0000000000000000R00000000000000000011111000000000000000000000000000000000000000000000000001",
+    "111111111110~~~~~~~~~~~111110000000000QQQQQ0000000000000000000000000000000000000000000000000000000000000000000000001",
+    "11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
   ]
 ];
 
-const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 15, squash: 1, stretch: 1, angle: 0, isGrounded: false, jumps: 0 };
+const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 15, mode: 'normal', squash: 1, stretch: 1, angle: 0, spinRate: 0, spinReverseCooldown: 0, isGrounded: false, jumps: 0, rubberBoost: 0 };
 const keys = { left: false, right: false, up: false, jumpPressed: false };
 
 function resetInputState() {
@@ -527,16 +685,52 @@ function resetInputState() {
   keys.right = false;
   keys.up = false;
   keys.jumpPressed = false;
+  proximityCharge = {};
+}
+
+function resetDynamicLevelState() {
+  proximityCharge = {};
+  fallingPlatforms = {};
+  checkpoint = null;
+}
+
+function updateLifeHud() {
+  if (livesEl) livesEl.innerText = lives;
+}
+
+function setBallMode(mode) {
+  ball.mode = mode === 'large' ? 'large' : 'normal';
+  ball.radius = ball.mode === 'large' ? 24 : 15;
+  ball.rubberBoost = 0;
+}
+
+function setCheckpoint() {
+  checkpoint = {
+    level: currentLevel,
+    gameMode,
+    x: ball.x,
+    y: ball.y,
+    mode: ball.mode,
+    ringsCollected
+  };
+  playSound('door');
 }
 
 function resetBallState() {
   ball.vx = 0;
   ball.vy = 0;
+  setBallMode('normal');
   ball.squash = 1;
   ball.stretch = 1;
   ball.angle = 0;
+  ball.spinRate = 0;
+  ball.spinReverseCooldown = 0;
   ball.isGrounded = false;
   ball.jumps = 0;
+  ball.rubberBoost = 0;
+  speedBoostTimer = 0;
+  antiGravityTimer = 0;
+  activeWater = false;
   onConveyor = 0;
   keys.jumpPressed = false;
 }
@@ -602,6 +796,24 @@ function loadLevelData(layoutMap, isAI) {
       else if (char === '>') row.push(7);
       else if (char === 'T') row.push(8);
       else if (char === 'Z') row.push(9);
+      else if (char === 'M') row.push(10);
+      else if (char === 'L') row.push(11);
+      else if (char === 'P') row.push(12);
+      else if (char === 'V') row.push(13);
+      else if (char === 'F') row.push(14);
+      else if (char === 'W') row.push(15);
+      else if (char === 'H') row.push(16);
+      else if (char === 'G') row.push(17);
+      else if (char === 'J') row.push(18);
+      else if (char === '~') row.push(19);
+      else if (char === 'U') row.push(20);
+      else if (char === 'N') row.push(21);
+      else if (char === 'Q') row.push(22);
+      else if (char === 'Y') row.push(23);
+      else if (char === 'A') row.push(24);
+      else if (char === 'K') row.push(25);
+      else if (char === 'O') row.push(26);
+      else if (char === 'D') row.push(27);
       else if (char === 'S') { 
         row.push(0); 
         ball.x = mult(x, TILE_SIZE) + TILE_SIZE / 2; 
@@ -611,6 +823,7 @@ function loadLevelData(layoutMap, isAI) {
     }
     map.push(row);
   }
+  resetDynamicLevelState();
   resetBallState();
   
   if(isAI) {
@@ -626,6 +839,7 @@ function loadLevelData(layoutMap, isAI) {
     ringsEl.innerText = ringsCollected + '/' + ringsTotal;
   }
   
+  updateLifeHud();
   gameState = 'play';
   startOverlay.style.opacity = '0';
   promptOverlay.style.opacity = '0';
@@ -650,7 +864,7 @@ function loadLevel(idx) {
 
 const AI_MAP_ROWS = 16;
 const AI_MAP_COLS = 60;
-const AI_ALLOWED_TILES = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'Z', 'R', 'S', 'E']);
+const AI_ALLOWED_TILES = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'Z', 'M', 'L', 'P', 'V', 'F', 'W', 'H', 'G', 'J', '~', 'U', 'N', 'Q', 'Y', 'A', 'K', 'O', 'D', 'R', 'S', 'E']);
 const DEFAULT_AI_ENDPOINT = '/api/generate-level';
 
 function getAiEndpoint() {
@@ -726,11 +940,11 @@ function normalizeAiMapData(mapData) {
 }
 
 function isAiClearTile(tile) {
-  return tile === '0' || tile === 'S' || tile === 'E' || tile === 'R' || tile === 'Z';
+  return tile === '0' || tile === 'S' || tile === 'E' || tile === 'R' || tile === 'Z' || tile === 'M' || tile === 'L' || tile === 'P' || tile === 'V' || tile === 'F' || tile === 'W' || tile === '~' || tile === 'U' || tile === 'N' || tile === 'Y' || tile === 'A' || tile === 'K' || tile === 'O' || tile === 'D';
 }
 
 function isAiSolidTile(tile) {
-  return tile === '1' || tile === '<' || tile === '>' || tile === 'T';
+  return tile === '1' || tile === '<' || tile === '>' || tile === 'T' || tile === 'H' || tile === 'G' || tile === 'J' || tile === 'Q';
 }
 
 function isAiDangerTile(tile) {
@@ -739,7 +953,7 @@ function isAiDangerTile(tile) {
 
 
 function isAiDynamicHazardTile(tile) {
-  return tile === 'Z';
+  return tile === 'Z' || tile === 'M' || tile === 'L' || tile === 'P' || tile === 'V' || tile === 'F' || tile === 'W' || tile === 'H' || tile === 'G' || tile === 'J' || tile === 'D';
 }
 
 function findAiTile(mapData, target) {
@@ -793,7 +1007,7 @@ function hasAiInteractiveGameplay(mapData) {
   for (let r = 0; r < mapData.length; r++) {
     for (let c = 0; c < mapData[r].length; c++) {
       const tile = mapData[r][c];
-      if (tile === 'R' || tile === '<' || tile === '>' || tile === 'T' || tile === 'Z' || tile === 'B' || tile === 'X') count++;
+      if (tile === 'R' || tile === '<' || tile === '>' || tile === 'T' || tile === 'Z' || tile === 'M' || tile === 'L' || tile === 'P' || tile === 'V' || tile === 'F' || tile === 'W' || tile === 'H' || tile === 'G' || tile === 'J' || tile === '~' || tile === 'U' || tile === 'N' || tile === 'Q' || tile === 'Y' || tile === 'A' || tile === 'K' || tile === 'O' || tile === 'D' || tile === 'B' || tile === 'X') count++;
     }
   }
   return count >= 3;
@@ -991,7 +1205,9 @@ window.startGame = function(e) {
   
   if (gameState === 'start' || gameState === 'win') {
     gameMode = 'campaign';
-    currentLevel = 0; 
+    currentLevel = 0;
+    lives = 3;
+    updateLifeHud(); 
     loadLevel(currentLevel);
   }
 }
@@ -999,6 +1215,26 @@ window.startGame = function(e) {
 function die() {
   resetInputState();
   playSound('explosion');
+
+  if (checkpoint && checkpoint.gameMode === gameMode && (gameMode === 'ai' || checkpoint.level === currentLevel) && lives > 1) {
+    lives--;
+    updateLifeHud();
+    ball.x = checkpoint.x;
+    ball.y = checkpoint.y;
+    ball.vx = 0;
+    ball.vy = 0;
+    ball.squash = 1;
+    ball.stretch = 1;
+    ball.isGrounded = false;
+    ball.jumps = 0;
+    setBallMode(checkpoint.mode || 'normal');
+    speedBoostTimer = 0;
+    antiGravityTimer = 0;
+    return;
+  }
+
+  lives = 3;
+  updateLifeHud();
   if(gameMode === 'ai') {
       loadLevelData(aiMapCache, true);
   } else {
@@ -1049,12 +1285,231 @@ function isPulseHazardWarning(r, c) {
   return phase >= 0.52 && phase < 0.72;
 }
 
+function getMovingHazardRect(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const phase = time * 2.2 + ((r * 3 + c) % 7) * 0.55;
+  const centerX = tx + TILE_SIZE / 2 + Math.sin(phase) * TILE_SIZE * 0.28;
+  return { x: centerX - 6, y: ty + 6, w: 12, h: TILE_SIZE - 12 };
+}
+
+function getLaserSegment(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const cx = tx + TILE_SIZE / 2;
+  const cy = ty + TILE_SIZE / 2;
+  const angle = time * 2.4 + ((r + c) % 6) * 0.5;
+  const len = TILE_SIZE * 0.38;
+  return {
+    x1: cx - Math.cos(angle) * len,
+    y1: cy - Math.sin(angle) * len,
+    x2: cx + Math.cos(angle) * len,
+    y2: cy + Math.sin(angle) * len
+  };
+}
+
+function pointToSegmentDistance(px, py, x1, y1, x2, y2) {
+  const dx = x2 - x1;
+  const dy = y2 - y1;
+  const lengthSq = dx * dx + dy * dy;
+  if (lengthSq === 0) return Math.hypot(px - x1, py - y1);
+  let t = ((px - x1) * dx + (py - y1) * dy) / lengthSq;
+  t = Math.max(0, Math.min(1, t));
+  const projX = x1 + t * dx;
+  const projY = y1 + t * dy;
+  return Math.hypot(px - projX, py - projY);
+}
+
+function movingHazardHits(r, c, br) {
+  const rect = getMovingHazardRect(r, c);
+  return aabb(ball.x, ball.y, br, rect.x, rect.y, rect.w, rect.h);
+}
+
+function rotatingLaserHits(r, c) {
+  const seg = getLaserSegment(r, c);
+  return pointToSegmentDistance(ball.x, ball.y, seg.x1, seg.y1, seg.x2, seg.y2) < 9;
+}
+
+
+function getProximityBombCharge(r, c) {
+  return proximityCharge[r + ',' + c] || 0;
+}
+
+function getVerticalCrusherRect(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const phase = time * 2.05 + ((r + c) % 5) * 0.65;
+  const y = ty + 6 + ((Math.sin(phase) + 1) / 2) * (TILE_SIZE - 22);
+  return { x: tx + 8, y, w: TILE_SIZE - 16, h: 14 };
+}
+
+function verticalCrusherHits(r, c, br) {
+  const rect = getVerticalCrusherRect(r, c);
+  return aabb(ball.x, ball.y, br, rect.x, rect.y, rect.w, rect.h);
+}
+
+function getFallingCrusherRect(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const phase = (time * 1.35 + ((r * 2 + c) % 6) * 0.17) % 1;
+  let y = ty + 2;
+  let h = 10;
+  if (phase > 0.32 && phase < 0.68) {
+    const drop = Math.sin(((phase - 0.32) / 0.36) * Math.PI);
+    y = ty + 2 + drop * (TILE_SIZE - 18);
+    h = 16;
+  }
+  return { x: tx + TILE_SIZE / 2 - 7, y, w: 14, h };
+}
+
+function fallingCrusherHits(r, c, br) {
+  const rect = getFallingCrusherRect(r, c);
+  return aabb(ball.x, ball.y, br - 4, rect.x, rect.y, rect.w, rect.h);
+}
+
+function getSweepingLaserSegment(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const sweep = (Math.sin(time * 2.0 + ((r + c) % 5) * 0.6) + 1) / 2;
+  const x = tx + 8 + sweep * (TILE_SIZE - 16);
+  return { x1: x, y1: ty + 6, x2: x, y2: ty + TILE_SIZE - 6 };
+}
+
+function sweepingLaserHits(r, c) {
+  const seg = getSweepingLaserSegment(r, c);
+  return pointToSegmentDistance(ball.x, ball.y, seg.x1, seg.y1, seg.x2, seg.y2) < 8;
+}
+
+function getMovingPlatformRect(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const phase = time * 1.65 + ((r + c) % 4) * 0.7;
+  const offset = Math.sin(phase) * TILE_SIZE * 0.18;
+  return { x: tx + 4 + offset, y: ty + 7, w: TILE_SIZE - 8, h: TILE_SIZE - 10 };
+}
+
+function isFallingPlatformActive(r, c) {
+  const triggerTime = fallingPlatforms[r + ',' + c];
+  if (triggerTime === undefined) return true;
+  const elapsed = time - triggerTime;
+  if (elapsed > 2.2) {
+    delete fallingPlatforms[r + ',' + c];
+    return true;
+  }
+  return elapsed < 0.35 || elapsed > 1.25;
+}
+
+function getFallingPlatformAlpha(r, c) {
+  const triggerTime = fallingPlatforms[r + ',' + c];
+  if (triggerTime === undefined) return 1;
+  const elapsed = time - triggerTime;
+  if (elapsed < 0.35) return 1 - elapsed * 1.2;
+  if (elapsed < 1.25) return 0.18;
+  return Math.min(1, (elapsed - 1.25) / 0.6);
+}
+
+function triggerFallingPlatform(r, c) {
+  const key = r + ',' + c;
+  if (fallingPlatforms[key] === undefined) fallingPlatforms[key] = time;
+}
+
+function updateProximityBombs() {
+  for (let r = 0; r < map.length; r++) {
+    for (let c = 0; c < map[r].length; c++) {
+      if (map[r][c] !== 12) continue;
+      const key = r + ',' + c;
+      const cx = mult(c, TILE_SIZE) + TILE_SIZE / 2;
+      const cy = mult(r, TILE_SIZE) + TILE_SIZE / 2;
+      const dist = Math.hypot(ball.x - cx, ball.y - cy);
+      const current = proximityCharge[key] || 0;
+      if (dist < TILE_SIZE * 1.18) {
+        proximityCharge[key] = Math.min(1, current + 0.035);
+        if (proximityCharge[key] >= 1) {
+          die();
+          return;
+        }
+      } else if (current > 0) {
+        proximityCharge[key] = Math.max(0, current - 0.025);
+      }
+    }
+  }
+}
+
+
+function getSpiderRect(r, c) {
+  const tx = mult(c, TILE_SIZE);
+  const ty = mult(r, TILE_SIZE);
+  const phase = time * 1.8 + ((r + c) % 6) * 0.6;
+  const horizontal = (r + c) % 2 === 0;
+  const ox = horizontal ? Math.sin(phase) * TILE_SIZE * 0.26 : 0;
+  const oy = horizontal ? 0 : Math.sin(phase) * TILE_SIZE * 0.26;
+  return { x: tx + 10 + ox, y: ty + 10 + oy, w: TILE_SIZE - 20, h: TILE_SIZE - 20 };
+}
+
+function spiderHits(r, c, br) {
+  const rect = getSpiderRect(r, c);
+  return aabb(ball.x, ball.y, br - 4, rect.x, rect.y, rect.w, rect.h);
+}
+
+function handleWater(r, c, br, tx, ty) {
+  if (!aabb(ball.x, ball.y, br, tx + 2, ty + 2, TILE_SIZE - 4, TILE_SIZE - 4)) return false;
+  activeWater = true;
+  if (ball.mode === 'large') {
+    ball.y = Math.min(ball.y, ty - br + 6);
+    ball.vy = Math.min(ball.vy, 0.25);
+    ball.isGrounded = true;
+    ball.rubberBoost = 0;
+  } else {
+    ball.vy += 0.55;
+    ball.vx *= 0.92;
+    if (ball.y > ty + TILE_SIZE * 0.72) die();
+  }
+  return true;
+}
+
+function applyPickupTile(r, c, t, tx, ty, br) {
+  if (!aabb(ball.x, ball.y, br, tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10)) return false;
+  if (t === 20) { setBallMode('large'); playSound('door'); return true; }
+  if (t === 21) { setBallMode('normal'); playSound('door'); return true; }
+  if (t === 23) { speedBoostTimer = 2.4; map[r][c] = 0; playSound('ring'); return true; }
+  if (t === 24) { antiGravityTimer = 3.0; map[r][c] = 0; playSound('jump'); return true; }
+  if (t === 25) { setCheckpoint(); map[r][c] = 0; playSound('crystal'); return true; }
+  if (t === 26) { lives = Math.min(5, lives + 1); updateLifeHud(); map[r][c] = 0; playSound('life'); return true; }
+  return false;
+}
+
 function aabb(bx, by, br, tx, ty, tw, th) {
   const cx = Math.max(tx, Math.min(bx, tx + tw));
   const cy = Math.max(ty, Math.min(by, ty + th));
   const dx = bx - cx; 
   const dy = by - cy;
   return (dx * dx + dy * dy) < (br * br);
+}
+
+function updateBallRolling() {
+  const speed = ball.vx;
+  const absSpeed = Math.abs(speed);
+  const currentDirection = ball.spinRate > 0.2 ? 1 : (ball.spinRate < -0.2 ? -1 : 0);
+  const targetDirection = speed > SPIN_STOP_THRESHOLD ? 1 : (speed < -SPIN_STOP_THRESHOLD ? -1 : 0);
+
+  if (targetDirection !== 0 && currentDirection !== 0 && targetDirection !== currentDirection && ball.spinReverseCooldown <= 0) {
+    ball.spinReverseCooldown = 0.1;
+    ball.spinRate = 0;
+  }
+
+  if (ball.spinReverseCooldown > 0) {
+    ball.spinReverseCooldown = Math.max(0, ball.spinReverseCooldown - FRAME_DT);
+    ball.spinRate *= 0.45;
+  } else {
+    const spinScale = ball.isGrounded ? GROUND_SPIN_PER_SPEED : AIR_SPIN_PER_SPEED;
+    const targetSpinRate = targetDirection === 0 ? 0 : Math.max(-MAX_SPIN_RATE, Math.min(MAX_SPIN_RATE, speed * spinScale));
+    const ease = targetDirection === 0 ? 0.08 : (ball.isGrounded ? 0.18 : 0.12);
+    ball.spinRate += (targetSpinRate - ball.spinRate) * ease;
+  }
+
+  if (absSpeed < SPIN_STOP_THRESHOLD && Math.abs(ball.spinRate) < 0.03) ball.spinRate = 0;
+  ball.spinRate = Math.max(-MAX_SPIN_RATE, Math.min(MAX_SPIN_RATE, ball.spinRate));
+  ball.angle += ball.spinRate * FRAME_DT;
 }
 
 function checkCollisions() {
@@ -1073,10 +1528,17 @@ function checkCollisions() {
       if (r < 0 || r >= map.length || c < 0 || c >= map[0].length) continue;
       const t = map[r][c];
       const tx = mult(c, TILE_SIZE), ty = mult(r, TILE_SIZE);
+      if (t === 19 && handleWater(r, c, br, tx, ty)) continue;
+      if ((t === 20 || t === 21 || t === 23 || t === 24 || t === 25 || t === 26) && applyPickupTile(r, c, t, tx, ty, br)) continue;
+      if (t === 27 && spiderHits(r, c, br)) { die(); return; }
       
-      const isSolid = t === 1 || t === 6 || t === 7 || (t === 8 && isTrapActive());
+      const dynamicPlatformRect = t === 16 ? getMovingPlatformRect(r, c) : null;
+      const isSolid = t === 1 || t === 6 || t === 7 || (t === 8 && isTrapActive()) || (t === 17 && isFallingPlatformActive(r, c)) || t === 18 || t === 22;
       
-      if (isSolid && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+      if (dynamicPlatformRect && aabb(ball.x, ball.y, br, dynamicPlatformRect.x, dynamicPlatformRect.y, dynamicPlatformRect.w, dynamicPlatformRect.h)) {
+        if (ball.vx > 0) { ball.x = dynamicPlatformRect.x - br; ball.vx = mult(ball.vx, BOUNCE_FACTOR); }
+        else if (ball.vx < 0) { ball.x = dynamicPlatformRect.x + dynamicPlatformRect.w + br; ball.vx = mult(ball.vx, BOUNCE_FACTOR); }
+      } else if (isSolid && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
         if (ball.vx > 0) { ball.x = tx - br; ball.vx = mult(ball.vx, BOUNCE_FACTOR); }
         else if (ball.vx < 0) { ball.x = tx + TILE_SIZE + br; ball.vx = mult(ball.vx, BOUNCE_FACTOR); }
       } else if (t === 2 && aabb(ball.x, ball.y, br - 6, tx + 8, ty + 16, TILE_SIZE - 16, TILE_SIZE - 16)) {
@@ -1084,6 +1546,16 @@ function checkCollisions() {
       } else if (t === 5 && aabb(ball.x, ball.y, br, tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10)) {
         die(); return;
       } else if (t === 9 && isPulseHazardActive(r, c) && aabb(ball.x, ball.y, br - 4, tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12)) {
+        die(); return;
+      } else if (t === 10 && movingHazardHits(r, c, br - 5)) {
+        die(); return;
+      } else if (t === 11 && rotatingLaserHits(r, c)) {
+        die(); return;
+      } else if (t === 13 && verticalCrusherHits(r, c, br - 4)) {
+        die(); return;
+      } else if (t === 14 && fallingCrusherHits(r, c, br - 4)) {
+        die(); return;
+      } else if (t === 15 && sweepingLaserHits(r, c)) {
         die(); return;
       } else if (t === 3 && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
         map[r][c] = 0; ringsCollected++; playSound('ring'); ringsEl.innerText = ringsCollected + '/' + ringsTotal;
@@ -1094,7 +1566,8 @@ function checkCollisions() {
     }
   }
 
-  ball.vy += GRAVITY;
+  const effectiveGravity = antiGravityTimer > 0 ? -0.22 : GRAVITY;
+  ball.vy += effectiveGravity;
   ball.y += ball.vy;
   startC = Math.floor((ball.x - br) / TILE_SIZE);
   endC = Math.floor((ball.x + br) / TILE_SIZE);
@@ -1106,17 +1579,48 @@ function checkCollisions() {
       if (r < 0 || r >= map.length || c < 0 || c >= map[0].length) continue;
       const t = map[r][c];
       const tx = mult(c, TILE_SIZE), ty = mult(r, TILE_SIZE);
+      if (t === 19 && handleWater(r, c, br, tx, ty)) continue;
+      if ((t === 20 || t === 21 || t === 23 || t === 24 || t === 25 || t === 26) && applyPickupTile(r, c, t, tx, ty, br)) continue;
+      if (t === 27 && spiderHits(r, c, br)) { die(); return; }
       
-      const isSolid = t === 1 || t === 6 || t === 7 || (t === 8 && isTrapActive());
+      const dynamicPlatformRect = t === 16 ? getMovingPlatformRect(r, c) : null;
+      const isSolid = t === 1 || t === 6 || t === 7 || (t === 8 && isTrapActive()) || (t === 17 && isFallingPlatformActive(r, c)) || t === 18 || t === 22;
       
-      if (isSolid && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+      if (dynamicPlatformRect && aabb(ball.x, ball.y, br, dynamicPlatformRect.x, dynamicPlatformRect.y, dynamicPlatformRect.w, dynamicPlatformRect.h)) {
         if (ball.vy > 0) {
-          ball.y = ty - br; 
-          if (ball.vy > 3) { playSound('bounce'); ball.squash = 1.4; ball.stretch = 0.6; }
+          ball.y = dynamicPlatformRect.y - br;
+          if (ball.vy > 3) { playSound('bounce'); ball.squash = 1.15; ball.stretch = 0.85; }
           ball.vy = mult(ball.vy, BOUNCE_FACTOR);
           if (Math.abs(ball.vy) < 1.5) { ball.vy = 0; ball.isGrounded = true; }
-          if (t === 6) onConveyor = -1;
-          if (t === 7) onConveyor = 1;
+        } else if (ball.vy < 0) {
+          ball.y = dynamicPlatformRect.y + dynamicPlatformRect.h + br; ball.vy = mult(ball.vy, BOUNCE_FACTOR);
+        }
+      } else if (isSolid && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
+        if (ball.vy > 0) {
+          ball.y = ty - br; 
+          if (t === 18) {
+            playSound('jump');
+            ball.vy = ball.mode === 'large' ? -13.4 : -12.2;
+            ball.squash = 1.18;
+            ball.stretch = 0.82;
+            ball.isGrounded = false;
+            ball.jumps = 1;
+          } else if (t === 22) {
+            playSound('bounce');
+            ball.rubberBoost = Math.min(4, ball.rubberBoost + 1);
+            ball.vy = -(8.8 + ball.rubberBoost * 1.15 + (ball.mode === 'large' ? 1.1 : 0));
+            ball.squash = 1.15;
+            ball.stretch = 0.85;
+            ball.isGrounded = false;
+          } else {
+            ball.rubberBoost = 0;
+            if (t === 17) triggerFallingPlatform(r, c);
+            if (ball.vy > 3) { playSound('bounce'); ball.squash = 1.15; ball.stretch = 0.85; }
+            ball.vy = mult(ball.vy, BOUNCE_FACTOR);
+            if (Math.abs(ball.vy) < 1.5) { ball.vy = 0; ball.isGrounded = true; }
+            if (t === 6) onConveyor = -1;
+            if (t === 7) onConveyor = 1;
+          }
         } else if (ball.vy < 0) { 
           ball.y = ty + TILE_SIZE + br; ball.vy = mult(ball.vy, BOUNCE_FACTOR); 
         }
@@ -1125,6 +1629,16 @@ function checkCollisions() {
       } else if (t === 5 && aabb(ball.x, ball.y, br, tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10)) {
         die(); return;
       } else if (t === 9 && isPulseHazardActive(r, c) && aabb(ball.x, ball.y, br - 4, tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12)) {
+        die(); return;
+      } else if (t === 10 && movingHazardHits(r, c, br - 5)) {
+        die(); return;
+      } else if (t === 11 && rotatingLaserHits(r, c)) {
+        die(); return;
+      } else if (t === 13 && verticalCrusherHits(r, c, br - 4)) {
+        die(); return;
+      } else if (t === 14 && fallingCrusherHits(r, c, br - 4)) {
+        die(); return;
+      } else if (t === 15 && sweepingLaserHits(r, c)) {
         die(); return;
       } else if (t === 3 && aabb(ball.x, ball.y, br, tx, ty, TILE_SIZE, TILE_SIZE)) {
         map[r][c] = 0; ringsCollected++; playSound('ring'); ringsEl.innerText = ringsCollected + '/' + ringsTotal;
@@ -1147,7 +1661,7 @@ function update() {
     
     ball.stretch = Math.max(0, ball.stretch - 0.025);
     ball.squash = Math.max(0, ball.squash - 0.025);
-    ball.angle += 0.15;
+    updateBallRolling();
 
     if (interstitialTimer >= 1.8) { 
       if(gameMode === 'ai') {
@@ -1166,8 +1680,14 @@ function update() {
   
   if (gameState !== 'play') return;
   
-  if (keys.left) ball.vx -= MOVE_ACCEL;
-  if (keys.right) ball.vx += MOVE_ACCEL;
+  updateProximityBombs();
+  if (gameState !== 'play') return;
+  
+  if (speedBoostTimer > 0) speedBoostTimer = Math.max(0, speedBoostTimer - FRAME_DT);
+  if (antiGravityTimer > 0) antiGravityTimer = Math.max(0, antiGravityTimer - FRAME_DT);
+  const moveBoost = speedBoostTimer > 0 ? 1.25 : 1;
+  if (keys.left) ball.vx -= MOVE_ACCEL * moveBoost;
+  if (keys.right) ball.vx += MOVE_ACCEL * moveBoost;
   
   ball.vx = mult(ball.vx, ball.isGrounded ? FRICTION_GROUND : FRICTION_AIR);
   
@@ -1175,14 +1695,15 @@ function update() {
     ball.vx += mult(onConveyor, 1.5);
   }
   
-  if (ball.vx > MAX_SPEED) ball.vx = MAX_SPEED;
-  if (ball.vx < -MAX_SPEED) ball.vx = -MAX_SPEED;
+  const currentMaxSpeed = speedBoostTimer > 0 ? MAX_SPEED * 1.38 : MAX_SPEED;
+  if (ball.vx > currentMaxSpeed) ball.vx = currentMaxSpeed;
+  if (ball.vx < -currentMaxSpeed) ball.vx = -currentMaxSpeed;
   
   if (ball.isGrounded) ball.jumps = 0;
 
   if (keys.up && !keys.jumpPressed && ball.jumps < 2) {
-    ball.vy = JUMP_FORCE;
-    ball.squash = 0.6; ball.stretch = 1.4;
+    ball.vy = ball.mode === 'large' ? JUMP_FORCE * 1.16 : JUMP_FORCE;
+    ball.squash = 1.10; ball.stretch = 0.90;
     playSound('jump'); 
     ball.isGrounded = false;
     ball.jumps++;
@@ -1194,11 +1715,10 @@ function update() {
   if (gameState !== 'play') return;
   if (ball.y > map.length * TILE_SIZE + 200) { die(); return; }
   
-  let targetStretch = ball.isGrounded ? 1 : 1 + mult(Math.abs(ball.vy), 0.015);
-  let targetSquash = ball.isGrounded ? 1 : 1 - mult(Math.abs(ball.vy), 0.01);
-  ball.stretch += mult((targetStretch - ball.stretch), 0.2);
-  ball.squash += mult((targetSquash - ball.squash), 0.2);
-  ball.angle += mult(ball.vx, 0.06);
+  const easeBack = ball.isGrounded ? 0.18 : 0.14;
+  ball.stretch += mult((1 - ball.stretch), easeBack);
+  ball.squash += mult((1 - ball.squash), easeBack);
+  updateBallRolling();
 }
 
 let camX = 0, camY = 0;
@@ -1311,11 +1831,325 @@ function draw() {
           ctx.lineTo(tx + 28, ty + 36);
           ctx.stroke();
         }
+      } else if (t === 10) {
+        const rect = getMovingHazardRect(r, c);
+        ctx.strokeStyle = 'rgba(255,255,255,0.14)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tx + 8, ty + TILE_SIZE / 2);
+        ctx.lineTo(tx + TILE_SIZE - 8, ty + TILE_SIZE / 2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255, 71, 87, 0.18)';
+        ctx.fillRect(tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10);
+        const mGrad = ctx.createLinearGradient(rect.x, rect.y, rect.x + rect.w, rect.y + rect.h);
+        mGrad.addColorStop(0, 'rgb(255, 71, 87)');
+        mGrad.addColorStop(1, 'rgb(254, 202, 87)');
+        ctx.fillStyle = mGrad;
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(rect.x - 2, rect.y, rect.w + 4, rect.h);
+      } else if (t === 11) {
+        const seg = getLaserSegment(r, c);
+        ctx.fillStyle = 'rgba(255, 71, 87, 0.13)';
+        ctx.beginPath();
+        ctx.arc(tx + TILE_SIZE / 2, ty + TILE_SIZE / 2, TILE_SIZE / 2.8, 0, mult(Math.PI, 2));
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 107, 129, 0.92)';
+        ctx.lineWidth = 5;
+        ctx.beginPath();
+        ctx.moveTo(seg.x1, seg.y1);
+        ctx.lineTo(seg.x2, seg.y2);
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(seg.x1, seg.y1);
+        ctx.lineTo(seg.x2, seg.y2);
+        ctx.stroke();
+        ctx.fillStyle = 'rgb(15, 23, 42)';
+        ctx.beginPath();
+        ctx.arc(tx + TILE_SIZE / 2, ty + TILE_SIZE / 2, 6, 0, mult(Math.PI, 2));
+        ctx.fill();
+      } else if (t === 12) {
+        const charge = getProximityBombCharge(r, c);
+        const cx = tx + TILE_SIZE / 2;
+        const cy = ty + TILE_SIZE / 2;
+        ctx.strokeStyle = charge > 0.7 ? 'rgba(255, 71, 87, 0.9)' : 'rgba(254, 202, 87, 0.55)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy, TILE_SIZE * 0.58, 0, mult(Math.PI, 2));
+        ctx.stroke();
+        ctx.fillStyle = 'rgb(17, 24, 39)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, TILE_SIZE * 0.24, 0, mult(Math.PI, 2));
+        ctx.fill();
+        ctx.fillStyle = charge > 0.7 ? 'rgb(255, 71, 87)' : 'rgb(254, 202, 87)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, TILE_SIZE * (0.08 + charge * 0.12), 0, mult(Math.PI, 2));
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.72)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(cx + 2, cy - TILE_SIZE * 0.25);
+        ctx.lineTo(cx + TILE_SIZE * 0.18, cy - TILE_SIZE * 0.38);
+        ctx.stroke();
+      } else if (t === 13) {
+        const rect = getVerticalCrusherRect(r, c);
+        ctx.strokeStyle = 'rgba(255,255,255,0.16)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tx + TILE_SIZE / 2, ty + 6);
+        ctx.lineTo(tx + TILE_SIZE / 2, ty + TILE_SIZE - 6);
+        ctx.stroke();
+        ctx.fillStyle = 'rgba(255, 71, 87, 0.18)';
+        ctx.fillRect(tx + 6, ty + 5, TILE_SIZE - 12, TILE_SIZE - 10);
+        ctx.fillStyle = 'rgb(255, 71, 87)';
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.72)';
+        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      } else if (t === 14) {
+        const rect = getFallingCrusherRect(r, c);
+        ctx.fillStyle = 'rgba(255, 71, 87, 0.12)';
+        ctx.fillRect(tx + TILE_SIZE / 2 - 8, ty + 4, 16, TILE_SIZE - 8);
+        ctx.fillStyle = 'rgb(255, 107, 129)';
+        ctx.beginPath();
+        ctx.moveTo(rect.x, rect.y);
+        ctx.lineTo(rect.x + rect.w, rect.y);
+        ctx.lineTo(rect.x + rect.w / 2, rect.y + rect.h + 10);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      } else if (t === 15) {
+        const seg = getSweepingLaserSegment(r, c);
+        ctx.fillStyle = 'rgba(255, 71, 87, 0.10)';
+        ctx.fillRect(tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10);
+        ctx.strokeStyle = 'rgba(255, 107, 129, 0.95)';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(seg.x1, seg.y1);
+        ctx.lineTo(seg.x2, seg.y2);
+        ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(tx + 8, ty + 8);
+        ctx.lineTo(tx + TILE_SIZE - 8, ty + 8);
+        ctx.moveTo(tx + 8, ty + TILE_SIZE - 8);
+        ctx.lineTo(tx + TILE_SIZE - 8, ty + TILE_SIZE - 8);
+        ctx.stroke();
+      } else if (t === 16) {
+        const rect = getMovingPlatformRect(r, c);
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tx + 6, ty + TILE_SIZE / 2);
+        ctx.lineTo(tx + TILE_SIZE - 6, ty + TILE_SIZE / 2);
+        ctx.stroke();
+        const pGrad = ctx.createLinearGradient(rect.x, rect.y, rect.x, rect.y + rect.h);
+        pGrad.addColorStop(0, 'rgb(82, 183, 255)');
+        pGrad.addColorStop(1, 'rgb(30, 64, 175)');
+        ctx.fillStyle = pGrad;
+        ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+        ctx.strokeStyle = 'rgba(255,255,255,0.65)';
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+      } else if (t === 17) {
+        const alpha = getFallingPlatformAlpha(r, c);
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = 'rgba(254, 202, 87, 0.25)';
+        ctx.fillRect(tx, ty, TILE_SIZE, TILE_SIZE);
+        ctx.fillStyle = 'rgb(254, 202, 87)';
+        ctx.fillRect(tx + 4, ty + 8 + (1 - alpha) * 8, TILE_SIZE - 8, TILE_SIZE - 14);
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(tx + 4, ty + 8 + (1 - alpha) * 8, TILE_SIZE - 8, TILE_SIZE - 14);
+        ctx.restore();
+      } else if (t === 18) {
+        const pulse = (Math.sin(time * 8 + c) + 1) / 2;
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.18)';
+        roundedRectPath(ctx, tx + 4, ty + 8, TILE_SIZE - 8, TILE_SIZE - 10, 8);
+        ctx.fill();
+        ctx.fillStyle = 'rgb(71, 85, 105)';
+        roundedRectPath(ctx, tx + 6, ty + 12, TILE_SIZE - 12, TILE_SIZE - 16, 7);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(226, 232, 240, 0.82)';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < 2; i++) {
+          const ax = tx + TILE_SIZE / 2 + (i - 0.5) * 13;
+          ctx.beginPath();
+          ctx.moveTo(ax, ty + TILE_SIZE - 11);
+          ctx.lineTo(ax, ty + 18 - pulse * 3);
+          ctx.moveTo(ax - 5, ty + 23 - pulse * 3);
+          ctx.lineTo(ax, ty + 17 - pulse * 3);
+          ctx.lineTo(ax + 5, ty + 23 - pulse * 3);
+          ctx.stroke();
+        }
+
+      } else if (t === 19) {
+        const shimmer = Math.sin(time * 3 + c) * 2;
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.40)';
+        ctx.fillRect(tx, ty + 6, TILE_SIZE, TILE_SIZE - 6);
+        ctx.strokeStyle = 'rgba(147, 197, 253, 0.85)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(tx + 2, ty + 10 + shimmer);
+        ctx.quadraticCurveTo(tx + TILE_SIZE / 2, ty + 4 - shimmer, tx + TILE_SIZE - 2, ty + 10 + shimmer);
+        ctx.stroke();
+      } else if (t === 20) {
+        ctx.fillStyle = 'rgba(59, 130, 246, 0.18)';
+        ctx.fillRect(tx + 6, ty + 10, TILE_SIZE - 12, TILE_SIZE - 12);
+        const spikeGrad = ctx.createLinearGradient(tx, ty + 8, tx, ty + TILE_SIZE - 6);
+        spikeGrad.addColorStop(0, 'rgb(147, 197, 253)');
+        spikeGrad.addColorStop(1, 'rgb(37, 99, 235)');
+        ctx.fillStyle = spikeGrad;
+        ctx.beginPath();
+        ctx.moveTo(tx + TILE_SIZE / 2, ty + 9);
+        ctx.lineTo(tx + TILE_SIZE - 10, ty + TILE_SIZE - 8);
+        ctx.lineTo(tx + 10, ty + TILE_SIZE - 8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgb(254, 202, 87)';
+        ctx.beginPath(); ctx.arc(tx + TILE_SIZE / 2, ty + 17, 8, Math.PI, 0); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.5; ctx.stroke();
+      } else if (t === 21) {
+        ctx.fillStyle = 'rgba(255, 71, 87, 0.18)';
+        ctx.fillRect(tx + 7, ty + 12, TILE_SIZE - 14, TILE_SIZE - 14);
+        ctx.fillStyle = 'rgb(255, 71, 87)';
+        ctx.beginPath(); ctx.moveTo(tx + TILE_SIZE/2, ty + 12); ctx.lineTo(tx + TILE_SIZE - 10, ty + TILE_SIZE - 10); ctx.lineTo(tx + 10, ty + TILE_SIZE - 10); ctx.closePath(); ctx.fill();
+      } else if (t === 22) {
+        const rubberGrad = ctx.createLinearGradient(tx, ty + 8, tx, ty + TILE_SIZE);
+        rubberGrad.addColorStop(0, 'rgb(96, 165, 250)');
+        rubberGrad.addColorStop(1, 'rgb(30, 64, 175)');
+        ctx.fillStyle = rubberGrad;
+        roundedRectPath(ctx, tx + 2, ty + 8, TILE_SIZE - 4, TILE_SIZE - 10, 9);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(191, 219, 254, 0.95)';
+        ctx.lineWidth = 3;
+        for (let i = 0; i < 3; i++) {
+          ctx.beginPath();
+          ctx.moveTo(tx + 8, ty + 16 + i * 8);
+          ctx.quadraticCurveTo(tx + TILE_SIZE / 2, ty + 8 + i * 8, tx + TILE_SIZE - 8, ty + 16 + i * 8);
+          ctx.stroke();
+        }
+      } else if (t === 23) {
+        ctx.fillStyle = 'rgba(254, 202, 87, 0.20)';
+        roundedRectPath(ctx, tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12, 7);
+        ctx.fill();
+        ctx.fillStyle = 'rgb(254, 202, 87)';
+        roundedRectPath(ctx, tx + 10, ty + 12, TILE_SIZE - 20, TILE_SIZE - 16, 5);
+        ctx.fill();
+        ctx.fillStyle = 'rgb(15, 23, 42)';
+        ctx.font = '700 20px Fredoka, Arial Rounded MT Bold, sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('+', tx + TILE_SIZE/2, ty + TILE_SIZE/2 + 1);
+      } else if (t === 24) {
+        const pulse = (Math.sin(time * 5) + 1) / 2;
+        ctx.fillStyle = 'rgba(148, 163, 184, 0.18)';
+        ctx.fillRect(tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12);
+        const antiGrad = ctx.createLinearGradient(tx, ty + 6, tx, ty + TILE_SIZE - 8);
+        antiGrad.addColorStop(0, 'rgb(148, 163, 184)');
+        antiGrad.addColorStop(1, 'rgb(37, 99, 235)');
+        ctx.fillStyle = antiGrad;
+        ctx.beginPath();
+        ctx.moveTo(tx + TILE_SIZE / 2, ty + 7 - pulse * 3);
+        ctx.lineTo(tx + TILE_SIZE - 12, ty + TILE_SIZE - 9);
+        ctx.lineTo(tx + 12, ty + TILE_SIZE - 9);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = 'rgb(254, 202, 87)';
+        ctx.fillRect(tx + 12, ty + TILE_SIZE - 19, 5, 10);
+        ctx.fillRect(tx + TILE_SIZE - 17, ty + TILE_SIZE - 19, 5, 10);
+        ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 1.5; ctx.stroke();
+      } else if (t === 25) {
+        const floatY = Math.sin(time * 2.4 + c * 0.35) * 2.6;
+        const spin = time * 1.8 + c * 0.25;
+        const cx = tx + TILE_SIZE / 2;
+        const cy = ty + TILE_SIZE / 2 + floatY;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(spin);
+        ctx.fillStyle = 'rgba(254, 202, 87, 0.18)';
+        ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+        const crystalGrad = ctx.createLinearGradient(-10, -14, 10, 14);
+        crystalGrad.addColorStop(0, 'rgb(255, 244, 163)');
+        crystalGrad.addColorStop(0.55, 'rgb(254, 202, 87)');
+        crystalGrad.addColorStop(1, 'rgb(217, 119, 6)');
+        ctx.fillStyle = crystalGrad;
+        ctx.beginPath();
+        ctx.moveTo(0, -15);
+        ctx.lineTo(12, 0);
+        ctx.lineTo(0, 15);
+        ctx.lineTo(-12, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(0, -12); ctx.lineTo(0, 12); ctx.moveTo(-9, 0); ctx.lineTo(9, 0); ctx.stroke();
+        ctx.restore();
+      } else if (t === 26) {
+        const floatY = Math.sin(time * 2.8 + c * 0.4) * 3;
+        const pulse = (Math.sin(time * 5 + c) + 1) / 2;
+        const cx = tx + TILE_SIZE / 2;
+        const cy = ty + TILE_SIZE / 2 + floatY;
+        const radius = 12 + pulse * 1.2;
+        ctx.fillStyle = 'rgba(254, 202, 87, 0.18)';
+        ctx.beginPath(); ctx.arc(cx, cy, radius + 7, 0, Math.PI * 2); ctx.fill();
+        const lifeGrad = ctx.createRadialGradient(cx - 4, cy - 5, 2, cx, cy, radius);
+        lifeGrad.addColorStop(0, 'rgb(255, 244, 163)');
+        lifeGrad.addColorStop(0.65, 'rgb(254, 202, 87)');
+        lifeGrad.addColorStop(1, 'rgb(217, 119, 6)');
+        ctx.fillStyle = lifeGrad;
+        ctx.beginPath(); ctx.arc(cx, cy, radius, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.85)'; ctx.lineWidth = 1.5; ctx.stroke();
+        ctx.fillStyle = 'rgb(255, 105, 180)';
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + 6);
+        ctx.bezierCurveTo(cx - 12, cy - 2, cx - 6, cy - 11, cx, cy - 5);
+        ctx.bezierCurveTo(cx + 6, cy - 11, cx + 12, cy - 2, cx, cy + 6);
+        ctx.fill();
+      } else if (t === 27) {
+        const rect = getSpiderRect(r, c);
+        ctx.fillStyle = 'rgba(96, 165, 250, 0.18)';
+        ctx.fillRect(tx + 5, ty + 5, TILE_SIZE - 10, TILE_SIZE - 10);
+        ctx.fillStyle = 'rgb(59, 130, 246)';
+        ctx.beginPath(); ctx.arc(rect.x + rect.w/2, rect.y + rect.h/2, rect.w/2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(255,255,255,0.75)'; ctx.lineWidth = 2;
+        for (let i = -1; i <= 1; i += 2) {
+          ctx.beginPath();
+          ctx.moveTo(rect.x + rect.w/2, rect.y + rect.h/2);
+          ctx.lineTo(rect.x + rect.w/2 + i * 18, rect.y + 4);
+          ctx.moveTo(rect.x + rect.w/2, rect.y + rect.h/2);
+          ctx.lineTo(rect.x + rect.w/2 + i * 18, rect.y + rect.h - 4);
+          ctx.stroke();
+        }
       } else if (t === 3) {
-        const floatY = mult(Math.sin(mult(time, 3) + c), 4);
-        ctx.strokeStyle = 'rgb(254, 202, 87)'; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.arc(tx + TILE_SIZE/2, ty + TILE_SIZE/2 + floatY, TILE_SIZE/3, 0, mult(Math.PI, 2)); ctx.stroke();
-        ctx.strokeStyle = 'rgb(255, 159, 67)'; ctx.lineWidth = 2; ctx.stroke();
+        const floatY = Math.sin(time * 3 + c) * 3.2;
+        const cx = tx + TILE_SIZE / 2;
+        const cy = ty + TILE_SIZE / 2 + floatY;
+        const rot = time * 4 + c * 0.4;
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(rot);
+        const outerRingRadius = TILE_SIZE / 3.35;
+        const innerRingRadius = TILE_SIZE / 4.45;
+        ctx.strokeStyle = 'rgba(254, 202, 87, 0.95)'; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.arc(0, 0, outerRingRadius, 0, Math.PI * 2); ctx.stroke();
+        ctx.strokeStyle = 'rgba(255, 244, 163, 0.85)'; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(0, 0, innerRingRadius, 0, Math.PI * 2); ctx.stroke();
+        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+        ctx.beginPath(); ctx.arc(-TILE_SIZE * 0.15, -TILE_SIZE * 0.18, 2, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+        const sparkle = (Math.sin(time * 8 + c) + 1) / 2;
+        ctx.strokeStyle = `rgba(255, 244, 163, ${0.28 + sparkle * 0.55})`;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(cx + 15, cy - 16); ctx.lineTo(cx + 15, cy - 10);
+        ctx.moveTo(cx + 12, cy - 13); ctx.lineTo(cx + 18, cy - 13);
+        ctx.stroke();
       } else if (t === 4) {
         const isOpen = ringsCollected >= ringsTotal;
         ctx.fillStyle = isOpen ? 'rgb(46, 213, 115)' : 'rgb(255, 71, 87)';
@@ -1327,14 +2161,43 @@ function draw() {
           ctx.fillRect(tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12);
         } else {
           ctx.fillRect(tx + 6, ty + 6, TILE_SIZE - 12, TILE_SIZE - 12);
-          ctx.fillStyle = 'rgb(149, 165, 166)';
-          ctx.fillRect(tx + 12, ty + 6, 4, TILE_SIZE - 12);
-          ctx.fillRect(tx + 29, ty + 6, 4, TILE_SIZE - 12);
+          ctx.strokeStyle = 'rgb(254, 202, 87)';
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(tx + TILE_SIZE / 2, ty + 18, 8, Math.PI, 0);
+          ctx.stroke();
+          ctx.fillStyle = 'rgb(254, 202, 87)';
+          ctx.fillRect(tx + TILE_SIZE / 2 - 8, ty + 17, 16, 15);
+          ctx.fillStyle = 'rgb(15, 23, 42)';
+          ctx.beginPath();
+          ctx.arc(tx + TILE_SIZE / 2, ty + 24, 2.5, 0, mult(Math.PI, 2));
+          ctx.fill();
         }
       }
     }
   }
   
+  if (checkpoint && checkpoint.gameMode === gameMode && (gameMode === 'ai' || checkpoint.level === currentLevel)) {
+    const flagX = checkpoint.x;
+    const flagY = checkpoint.y - TILE_SIZE * 0.8;
+    ctx.save();
+    ctx.globalAlpha = 0.9;
+    ctx.strokeStyle = 'rgba(254, 202, 87, 0.9)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(flagX, flagY - 4);
+    ctx.lineTo(flagX, flagY + 24);
+    ctx.stroke();
+    ctx.fillStyle = 'rgba(254, 202, 87, 0.9)';
+    ctx.beginPath();
+    ctx.moveTo(flagX + 1, flagY - 4);
+    ctx.lineTo(flagX + 18, flagY + 2);
+    ctx.lineTo(flagX + 1, flagY + 9);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+  }
+
   ctx.save();
   ctx.translate(ball.x, ball.y);
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -1342,12 +2205,31 @@ function draw() {
   ctx.rotate(ball.angle);
   ctx.scale(ball.squash, ball.stretch);
   const bGrad = ctx.createRadialGradient(0, 0, 0, 0, 0, ball.radius);
-  bGrad.addColorStop(0, 'rgb(255, 107, 129)'); bGrad.addColorStop(0.7, 'rgb(255, 71, 87)'); bGrad.addColorStop(1, 'rgb(192, 57, 43)');
+  if (ball.mode === 'large') {
+    bGrad.addColorStop(0, 'rgb(147, 197, 253)'); bGrad.addColorStop(0.7, 'rgb(59, 130, 246)'); bGrad.addColorStop(1, 'rgb(30, 64, 175)');
+  } else {
+    bGrad.addColorStop(0, 'rgb(255, 107, 129)'); bGrad.addColorStop(0.7, 'rgb(255, 71, 87)'); bGrad.addColorStop(1, 'rgb(192, 57, 43)');
+  }
   ctx.fillStyle = bGrad;
   ctx.beginPath(); ctx.arc(0, 0, ball.radius, 0, mult(Math.PI, 2)); ctx.fill();
-  ctx.rotate(-ball.angle);
-  ctx.fillStyle = 'rgba(255,255,255,0.6)';
-  ctx.beginPath(); ctx.arc(-mult(ball.radius, 0.3), -mult(ball.radius, 0.3), mult(ball.radius, 0.25), 0, mult(Math.PI, 2)); ctx.fill();
+  ctx.save();
+  ctx.beginPath(); ctx.arc(0, 0, ball.radius - 0.5, 0, mult(Math.PI, 2)); ctx.clip();
+  ctx.strokeStyle = 'rgba(255,255,255,0.24)';
+  ctx.lineWidth = 1.25;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-mult(ball.radius, 0.48), -mult(ball.radius, 0.07));
+  ctx.quadraticCurveTo(0, -mult(ball.radius, 0.22), mult(ball.radius, 0.48), mult(ball.radius, 0.07));
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(114, 17, 32, 0.18)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(-mult(ball.radius, 0.42), mult(ball.radius, 0.34));
+  ctx.quadraticCurveTo(0, mult(ball.radius, 0.46), mult(ball.radius, 0.42), mult(ball.radius, 0.34));
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.beginPath(); ctx.arc(-mult(ball.radius, 0.28), -mult(ball.radius, 0.30), mult(ball.radius, 0.10), 0, mult(Math.PI, 2)); ctx.fill();
+  ctx.restore();
   ctx.restore();
   
   ctx.restore();

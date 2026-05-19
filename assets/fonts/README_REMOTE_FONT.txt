@@ -1,0 +1,1 @@
+This build uses the remote Google Fonts family 'Fredoka' via CSS @import. No local .otf font files are required. Internet access is required for the custom rounded font; the browser falls back to rounded/system fonts if Google Fonts is unavailable.
