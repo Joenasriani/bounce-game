@@ -6,46 +6,239 @@
 <title>Old Bounce</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Teko:wght@300;400&display=swap');
-  body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: rgb(11, 19, 32); touch-action: none; font-family: 'Teko', sans-serif; font-weight: 300; letter-spacing: 1px; color: rgb(252, 232, 232); user-select: none; }
-  canvas { display: block; width: 100%; height: 100%; }
-  
-  .ui { position: absolute; top: clamp(10px, 3vh, 20px); left: clamp(10px, 3vw, 20px); color: rgb(252, 232, 232); font-size: clamp(20px, 5vw, 28px); font-weight: 400; text-shadow: 0 4px 6px rgba(0,0,0,0.6); z-index: 10; pointer-events: none; display: flex; gap: clamp(10px, 2vw, 20px); text-transform: uppercase; }
-  .ui-badge { background: rgba(255,255,255,0.05); padding: 4px clamp(10px, 3vw, 16px); border-radius: 12px; backdrop-filter: blur(4px); border: 1px solid rgba(255, 71, 87, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-  
-  .controls { position: absolute; bottom: clamp(15px, 5vh, 30px); left: 0; width: 100%; display: flex; justify-content: space-between; padding: 0 clamp(15px, 5vw, 30px); box-sizing: border-box; pointer-events: none; z-index: 10; }
-  .btn-group { display: flex; gap: clamp(10px, 3vw, 15px); }
-  .btn { width: clamp(55px, 15vw, 70px); height: clamp(55px, 15vw, 70px); border-radius: 50%; background: rgba(255, 71, 87, 0.1); border: 1px solid rgba(255, 71, 87, 0.3); display: flex; align-items: center; justify-content: center; color: rgb(252, 232, 232); font-size: clamp(24px, 6vw, 32px); pointer-events: auto; touch-action: none; backdrop-filter: blur(5px); box-shadow: 0 8px 16px rgba(0,0,0,0.4); transition: background 0.1s, transform 0.1s; font-family: -apple-system, sans-serif; }
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+    --ui-pad: clamp(10px, 2.2vmin, 22px);
+    --control-size: clamp(56px, 8.5vmin, 76px);
+    --control-gap: clamp(10px, 2vmin, 18px);
+  }
+
+  * { box-sizing: border-box; }
+  body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overflow: hidden;
+    background: rgb(11, 19, 32);
+    touch-action: none;
+    font-family: 'Teko', sans-serif;
+    font-weight: 300;
+    letter-spacing: 1px;
+    color: rgb(252, 232, 232);
+    user-select: none;
+    overscroll-behavior: none;
+  }
+  body { min-height: 100dvh; }
+  canvas { display: block; width: 100vw; height: 100dvh; }
+
+  .ui {
+    position: absolute;
+    top: calc(var(--safe-top) + var(--ui-pad));
+    left: calc(var(--safe-left) + var(--ui-pad));
+    right: calc(var(--safe-right) + var(--ui-pad));
+    color: rgb(252, 232, 232);
+    font-size: clamp(18px, 3.2vmin, 28px);
+    font-weight: 400;
+    text-shadow: 0 4px 6px rgba(0,0,0,0.6);
+    z-index: 10;
+    pointer-events: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(8px, 1.8vmin, 18px);
+    align-items: flex-start;
+    text-transform: uppercase;
+  }
+  .ui-badge {
+    background: rgba(255,255,255,0.05);
+    padding: clamp(3px, 0.8vmin, 5px) clamp(10px, 2vmin, 16px);
+    border-radius: clamp(9px, 2vmin, 12px);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 71, 87, 0.2);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .controls {
+    position: absolute;
+    bottom: calc(var(--safe-bottom) + clamp(12px, 3.2vmin, 30px));
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 calc(var(--safe-right) + clamp(14px, 4vmin, 36px)) 0 calc(var(--safe-left) + clamp(14px, 4vmin, 36px));
+    pointer-events: none;
+    z-index: 10;
+  }
+  .btn-group { display: flex; gap: var(--control-gap); }
+  .btn {
+    width: var(--control-size);
+    height: var(--control-size);
+    min-width: 48px;
+    min-height: 48px;
+    border-radius: 50%;
+    background: rgba(255, 71, 87, 0.1);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgb(252, 232, 232);
+    font-size: clamp(23px, 4vmin, 34px);
+    line-height: 1;
+    pointer-events: auto;
+    touch-action: none;
+    backdrop-filter: blur(5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    transition: background 0.1s, transform 0.1s, box-shadow 0.1s;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
   .btn:active { background: rgba(255, 71, 87, 0.25); transform: translateY(4px); box-shadow: 0 4px 8px rgba(0,0,0,0.4); }
-  
-  .overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; z-index: 20; transition: opacity 0.3s; pointer-events: none; }
-  .overlay-bg { background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: auto; }
-  
-  .interstitial { position: absolute; top: 20%; left: 0; width: 100%; text-align: center; color: rgb(252, 232, 232); opacity: 0; transition: opacity 0.5s; pointer-events: none; padding: 0 20px; box-sizing: border-box; }
-  .inter-title { font-size: clamp(48px, 12vw, 90px); font-weight: 400; letter-spacing: 6px; text-shadow: 0 10px 20px rgba(0,0,0,0.8); margin-bottom: 0px; color: rgb(255, 71, 87); text-transform: uppercase; line-height: 1.1; }
-  .inter-sub { font-size: clamp(24px, 6vw, 36px); color: rgb(255, 107, 129); font-weight: 300; text-shadow: 0 4px 10px rgba(0,0,0,0.8); text-transform: uppercase; letter-spacing: 2px; }
 
-  .msg-box { position: relative; background: linear-gradient(145deg, rgb(19, 15, 38), rgb(11, 8, 23)); padding: clamp(20px, 5vh, 40px) clamp(20px, 5vw, 60px); border-radius: 24px; text-align: center; color: rgb(252, 232, 232); box-shadow: 0 20px 50px rgba(0,0,0,0.7); border: 1px solid rgba(255, 71, 87, 0.2); pointer-events: auto; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; box-sizing: border-box; scrollbar-width: none; }
-  .msg-box::-webkit-scrollbar { display: none; }
-  .msg-title { font-size: clamp(36px, 8vw, 56px); font-weight: 400; margin-bottom: 10px; color: rgb(255, 71, 87); text-transform: uppercase; letter-spacing: 3px; line-height: 1; }
-  .msg-sub { font-size: clamp(18px, 5vw, 24px); color: rgb(255, 107, 129); margin-bottom: 25px; font-weight: 300; line-height: 1.2; }
-  .forge-title { font-size: clamp(32px, 8vw, 48px); color: rgb(255, 71, 87); line-height: 1.1; margin-bottom: 10px; }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+    transition: opacity 0.3s;
+    pointer-events: none;
+    padding: calc(var(--safe-top) + clamp(10px, 2.5vmin, 24px)) calc(var(--safe-right) + clamp(10px, 3vmin, 28px)) calc(var(--safe-bottom) + clamp(10px, 2.5vmin, 24px)) calc(var(--safe-left) + clamp(10px, 3vmin, 28px));
+    overflow: hidden;
+  }
+  .overlay-bg { background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); position: absolute; inset: 0; pointer-events: auto; }
 
-  .menu-btn { background: rgba(255, 71, 87, 0.05); border: 1px solid rgba(255, 71, 87, 0.3); color: rgb(252, 232, 232); padding: clamp(10px, 2vh, 12px) clamp(15px, 4vw, 30px); border-radius: 12px; font-size: clamp(20px, 5vw, 26px); font-weight: 300; cursor: pointer; transition: all 0.2s; width: 100%; margin-bottom: 15px; font-family: 'Teko', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+  .interstitial {
+    position: absolute;
+    top: clamp(12%, 20vh, 22%);
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: rgb(252, 232, 232);
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    padding: 0 calc(var(--safe-right) + 20px) 0 calc(var(--safe-left) + 20px);
+  }
+  .inter-title { font-size: clamp(42px, 10vmin, 90px); font-weight: 400; letter-spacing: clamp(3px, 0.7vmin, 6px); text-shadow: 0 10px 20px rgba(0,0,0,0.8); margin-bottom: 0; color: rgb(255, 71, 87); text-transform: uppercase; line-height: 0.95; }
+  .inter-sub { font-size: clamp(22px, 5vmin, 36px); color: rgb(255, 107, 129); font-weight: 300; text-shadow: 0 4px 10px rgba(0,0,0,0.8); text-transform: uppercase; letter-spacing: 2px; line-height: 1; }
+
+  .msg-box {
+    position: relative;
+    background: linear-gradient(145deg, rgb(19, 15, 38), rgb(11, 8, 23));
+    padding: clamp(16px, 4vmin, 40px) clamp(18px, 5vmin, 60px);
+    border-radius: clamp(18px, 3.5vmin, 24px);
+    text-align: center;
+    color: rgb(252, 232, 232);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.7);
+    border: 1px solid rgba(255, 71, 87, 0.2);
+    pointer-events: auto;
+    width: min(92vw, 500px);
+    max-width: min(92vw, 500px);
+    max-height: none;
+    overflow: visible;
+  }
+  .msg-title { font-size: clamp(34px, 7vmin, 56px); font-weight: 400; margin: 0 0 clamp(6px, 1.4vmin, 10px); color: rgb(255, 71, 87); text-transform: uppercase; letter-spacing: clamp(2px, 0.55vmin, 3px); line-height: 0.92; }
+  .msg-sub { font-size: clamp(18px, 3.8vmin, 24px); color: rgb(255, 107, 129); margin: 0 0 clamp(14px, 3vmin, 25px); font-weight: 300; line-height: 1.05; }
+  .forge-title { font-size: clamp(30px, 6.5vmin, 48px); color: rgb(255, 71, 87); line-height: 0.95; margin-bottom: clamp(8px, 2vmin, 10px); }
+
+  .menu-btn,
+  .gen-btn {
+    border-radius: clamp(10px, 2vmin, 12px);
+    font-size: clamp(19px, 3.8vmin, 26px);
+    font-family: 'Teko', sans-serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    width: 100%;
+    min-height: clamp(42px, 7vmin, 54px);
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .menu-btn {
+    background: rgba(255, 71, 87, 0.05);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+    color: rgb(252, 232, 232);
+    padding: clamp(8px, 1.8vmin, 12px) clamp(14px, 3vmin, 30px);
+    font-weight: 300;
+    margin-bottom: clamp(10px, 2.2vmin, 15px);
+  }
   .menu-btn:hover { background: rgba(255, 71, 87, 0.15); border-color: rgba(255, 71, 87, 0.6); transform: translateY(-2px); }
   .menu-btn:active { transform: translateY(2px); }
 
-  .gen-btn { background: linear-gradient(145deg, rgb(255, 71, 87), rgb(192, 57, 43)); color: white; border: none; padding: clamp(10px, 2vh, 12px) clamp(15px, 4vw, 30px); border-radius: 12px; font-size: clamp(20px, 5vw, 26px); font-weight: 400; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4); transition: all 0.2s; width: 100%; font-family: 'Teko', sans-serif; letter-spacing: 1px; text-transform: uppercase; }
+  .gen-btn {
+    background: linear-gradient(145deg, rgb(255, 71, 87), rgb(192, 57, 43));
+    color: white;
+    border: none;
+    padding: clamp(8px, 1.8vmin, 12px) clamp(14px, 3vmin, 30px);
+    font-weight: 400;
+    box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
+  }
   .gen-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 71, 87, 0.6); }
   .gen-btn:active { transform: translateY(2px); box-shadow: 0 2px 8px rgba(255, 71, 87, 0.4); }
   .gen-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-  
-  .ai-input { width: 100%; padding: clamp(8px, 2vh, 10px) 14px; border-radius: 8px; border: 1px solid rgba(255, 71, 87, 0.5); background: rgba(0,0,0,0.5); color: rgb(252, 232, 232); font-size: clamp(18px, 4vw, 24px); margin-bottom: 20px; outline: none; transition: border-color 0.2s; box-sizing: border-box; text-align: center; font-family: 'Teko', sans-serif; font-weight: 300; letter-spacing: 1px; }
+
+  .back-btn { margin-top: clamp(10px, 2vmin, 15px); margin-bottom: 0; }
+  .ai-input {
+    width: 100%;
+    padding: clamp(8px, 1.8vmin, 10px) 14px;
+    min-height: clamp(42px, 7vmin, 52px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 71, 87, 0.5);
+    background: rgba(0,0,0,0.5);
+    color: rgb(252, 232, 232);
+    font-size: clamp(18px, 3.6vmin, 24px);
+    margin-bottom: clamp(12px, 2.5vmin, 20px);
+    outline: none;
+    transition: border-color 0.2s;
+    text-align: center;
+    font-family: 'Teko', sans-serif;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
   .ai-input:focus { border-color: rgb(255, 71, 87); box-shadow: 0 0 10px rgba(255, 71, 87, 0.3); }
 
-  .loading-container { display: none; flex-direction: column; align-items: center; margin-top: 20px; }
-  .spinner { width: clamp(35px, 8vw, 45px); height: clamp(35px, 8vw, 45px); border: 4px solid rgba(255, 71, 87, 0.2); border-top: 4px solid rgb(255, 71, 87); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
-  .loading-text { color: rgb(255, 107, 129); font-weight: 400; font-size: clamp(20px, 5vw, 26px); letter-spacing: 2px; }
-  .error-text { display: none; color: rgb(255, 71, 87); margin-top: 15px; font-weight: 400; font-size: clamp(20px, 5vw, 26px); }
+  .loading-container { display: none; flex-direction: column; align-items: center; margin-top: clamp(10px, 2.2vmin, 20px); }
+  .spinner { width: clamp(32px, 6vmin, 45px); height: clamp(32px, 6vmin, 45px); border: 4px solid rgba(255, 71, 87, 0.2); border-top: 4px solid rgb(255, 71, 87); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: clamp(6px, 1.5vmin, 10px); }
+  .loading-text { color: rgb(255, 107, 129); font-weight: 400; font-size: clamp(18px, 3.6vmin, 26px); letter-spacing: 2px; line-height: 1; }
+  .error-text { display: none; color: rgb(255, 71, 87); margin-top: clamp(8px, 1.8vmin, 15px); font-weight: 400; font-size: clamp(18px, 3.6vmin, 26px); line-height: 1.05; }
+
+  @media (max-width: 520px) {
+    :root { --control-size: clamp(54px, 16vw, 66px); --control-gap: clamp(8px, 3vw, 14px); }
+    .controls { padding-left: calc(var(--safe-left) + 14px); padding-right: calc(var(--safe-right) + 14px); }
+    .ui { font-size: clamp(17px, 5vw, 22px); gap: 8px; }
+    .msg-box { width: min(92vw, 430px); padding-left: clamp(16px, 5vw, 24px); padding-right: clamp(16px, 5vw, 24px); }
+  }
+
+  @media (max-height: 560px) {
+    :root { --control-size: clamp(50px, 12vh, 62px); --control-gap: clamp(8px, 2.6vh, 14px); --ui-pad: 8px; }
+    .overlay { align-items: center; padding-top: calc(var(--safe-top) + 8px); padding-bottom: calc(var(--safe-bottom) + 8px); }
+    .msg-box { width: min(86vw, 480px); padding: clamp(10px, 3vh, 16px) clamp(16px, 5vw, 28px); border-radius: 18px; }
+    .msg-title { font-size: clamp(28px, 9vh, 42px); margin-bottom: 4px; line-height: 0.9; }
+    .forge-title { font-size: clamp(28px, 9vh, 40px); margin-bottom: 6px; }
+    .msg-sub { font-size: clamp(16px, 5.5vh, 21px); margin-bottom: 8px; }
+    .menu-btn, .gen-btn { min-height: clamp(34px, 10vh, 42px); font-size: clamp(17px, 5.8vh, 22px); padding-top: 5px; padding-bottom: 5px; }
+    .menu-btn { margin-bottom: 8px; }
+    .back-btn { margin-top: 8px; }
+    .ai-input { min-height: clamp(34px, 10vh, 42px); font-size: clamp(16px, 5.5vh, 21px); padding-top: 5px; padding-bottom: 5px; margin-bottom: 8px; }
+    .loading-container { margin-top: 8px; }
+    .spinner { width: 30px; height: 30px; margin-bottom: 5px; }
+    .loading-text, .error-text { font-size: clamp(16px, 5.5vh, 21px); }
+    .inter-title { font-size: clamp(34px, 13vh, 68px); }
+    .inter-sub { font-size: clamp(19px, 7vh, 30px); }
+  }
+
+  @media (min-width: 900px) and (min-height: 700px) {
+    :root { --control-size: 72px; }
+    .controls { padding-left: calc(var(--safe-left) + 34px); padding-right: calc(var(--safe-right) + 34px); }
+  }
 
   @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 </style>
@@ -71,10 +264,10 @@
   <div class="overlay-bg" onclick="closePrompt(event)"></div>
   <div class="msg-box" style="cursor: default;">
      <div class="msg-title forge-title">FORGE A LEVEL</div>
-     <input type="text" id="aiPrompt" class="ai-input" placeholder="e.g., A long cave with lava and traps" />
+     <input type="text" id="aiPrompt" class="ai-input" placeholder="e.g., A long cave with lava, rings, conveyors, and timed traps" />
      <br/>
      <button onclick="submitAiLevel(event)" class="gen-btn" id="btnSubmitAi">Generate Play</button>
-     <button class="menu-btn" style="margin-top: 15px; margin-bottom: 0;" onclick="closePrompt(event)">Back to Menu</button>
+     <button class="menu-btn back-btn" onclick="closePrompt(event)">Back to Menu</button>
      
      <div id="aiLoadingContainer" class="loading-container">
        <div class="spinner"></div>
@@ -182,7 +375,6 @@ let ringsCollected = 0;
 let time = 0;
 let interstitialTimer = 0;
 let onConveyor = 0;
-let particles = []; 
 
 const levels = [
   [
@@ -329,33 +521,73 @@ const levels = [
 const ball = { x: 0, y: 0, vx: 0, vy: 0, radius: 15, squash: 1, stretch: 1, angle: 0, isGrounded: false, jumps: 0 };
 const keys = { left: false, right: false, up: false, jumpPressed: false };
 
+function resetInputState() {
+  keys.left = false;
+  keys.right = false;
+  keys.up = false;
+  keys.jumpPressed = false;
+}
+
+function resetBallState() {
+  ball.vx = 0;
+  ball.vy = 0;
+  ball.squash = 1;
+  ball.stretch = 1;
+  ball.angle = 0;
+  ball.isGrounded = false;
+  ball.jumps = 0;
+  onConveyor = 0;
+  keys.jumpPressed = false;
+}
+
 function bindBtn(id, key) {
   const el = document.getElementById(id);
-  const press = (e) => { e.preventDefault(); keys[key] = true; };
-  const release = (e) => { e.preventDefault(); keys[key] = false; };
+  const press = (e) => {
+    if (e) e.preventDefault();
+    keys[key] = true;
+  };
+  const release = (e) => {
+    if (e) e.preventDefault();
+    keys[key] = false;
+    if (key === 'up') keys.jumpPressed = false;
+  };
   el.addEventListener('touchstart', press, {passive: false});
   el.addEventListener('touchend', release, {passive: false});
+  el.addEventListener('touchcancel', release, {passive: false});
   el.addEventListener('mousedown', press);
   el.addEventListener('mouseup', release);
   el.addEventListener('mouseleave', release);
+  el.addEventListener('pointercancel', release);
 }
 bindBtn('btnLeft', 'left');
 bindBtn('btnRight', 'right');
 bindBtn('btnJump', 'up');
 
+function isHandledKey(e) {
+  return e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === ' ';
+}
+
 window.addEventListener('keydown', e => {
+  if (!isHandledKey(e)) return;
+  e.preventDefault();
   if (e.key === 'ArrowLeft') keys.left = true;
   if (e.key === 'ArrowRight') keys.right = true;
   if (e.key === 'ArrowUp' || e.key === ' ') keys.up = true;
 });
 window.addEventListener('keyup', e => {
+  if (!isHandledKey(e)) return;
+  e.preventDefault();
   if (e.key === 'ArrowLeft') keys.left = false;
   if (e.key === 'ArrowRight') keys.right = false;
-  if (e.key === 'ArrowUp' || e.key === ' ') keys.up = false;
+  if (e.key === 'ArrowUp' || e.key === ' ') {
+    keys.up = false;
+    keys.jumpPressed = false;
+  }
 });
+window.addEventListener('blur', resetInputState);
 
 function loadLevelData(layoutMap, isAI) {
-  map = []; ringsTotal = 0; ringsCollected = 0; particles = [];
+  map = []; ringsTotal = 0; ringsCollected = 0;
   for (let y = 0; y < layoutMap.length; y++) {
     let row = [];
     for (let x = 0; x < layoutMap[y].length; x++) {
@@ -377,7 +609,7 @@ function loadLevelData(layoutMap, isAI) {
     }
     map.push(row);
   }
-  ball.vx = 0; ball.vy = 0; ball.squash = 1; ball.stretch = 1; ball.angle = 0;
+  resetBallState();
   
   if(isAI) {
       levelEl.innerText = 'AI';
@@ -414,7 +646,27 @@ function loadLevel(idx) {
   loadLevelData(levels[idx], false);
 }
 
-const obscureKey = "c2stb3ItdjEtZTkxZTczZmUwNDc2NWE4ZjU5ZDU4N2Y2NGM5ZDQ1ZjljNGJmOWJmNjY1ZGYzODNkM2E3MDk4YjZjYjg0MTI4OA==";
+const AI_MAP_ROWS = 16;
+const AI_MAP_COLS = 60;
+const AI_ALLOWED_TILES = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'R', 'S', 'E']);
+const DEFAULT_AI_ENDPOINT = '/api/generate-level';
+
+function getAiEndpoint() {
+  if (typeof window.BOUNCE_AI_ENDPOINT === 'string' && window.BOUNCE_AI_ENDPOINT.trim()) {
+    return window.BOUNCE_AI_ENDPOINT.trim();
+  }
+  try {
+    return localStorage.getItem('bounceAiEndpoint') || DEFAULT_AI_ENDPOINT;
+  } catch (err) {
+    return DEFAULT_AI_ENDPOINT;
+  }
+}
+
+function setAiError(message) {
+  aiError.innerText = message || 'Generation failed. Try again.';
+  aiError.style.display = 'block';
+}
+
 
 function openPrompt(e) {
   if(e) e.stopPropagation();
@@ -436,113 +688,238 @@ function closePrompt(e) {
   }, 300);
 }
 
-function isMapValid(mapData) {
-  if (!mapData || !mapData.length) return false;
-  let start = null, exit = null;
-  let rings = [];
-  for(let r=0; r<mapData.length; r++) {
-      for(let c=0; c<mapData[r].length; c++) {
-          if(mapData[r][c] === 'S') start = {r,c};
-          if(mapData[r][c] === 'E') exit = {r,c};
-          if(mapData[r][c] === 'R') rings.push({r,c});
-      }
-  }
-  if(!start || !exit) return false;
+function hidePromptOnly(e) {
+  if(e) e.stopPropagation();
+  promptOverlay.style.opacity = '0';
+  startOverlay.style.opacity = '0';
+  setTimeout(() => {
+    promptOverlay.style.display = 'none';
+    startOverlay.style.display = 'none';
+  }, 300);
+}
 
-  let visited = Array(mapData.length).fill(0).map(() => Array(mapData[0].length).fill(false));
-  let queue = [start];
+function normalizeAiMapData(mapData) {
+  if (!Array.isArray(mapData) || mapData.length !== AI_MAP_ROWS) return null;
+
+  let starts = 0;
+  let exits = 0;
+  const normalized = [];
+
+  for (let r = 0; r < mapData.length; r++) {
+    if (typeof mapData[r] !== 'string' || mapData[r].length !== AI_MAP_COLS) return null;
+
+    let row = '';
+    for (let c = 0; c < mapData[r].length; c++) {
+      const tile = mapData[r][c];
+      if (!AI_ALLOWED_TILES.has(tile)) return null;
+      if (tile === 'S') starts++;
+      if (tile === 'E') exits++;
+      row += tile;
+    }
+    normalized.push(row);
+  }
+
+  if (starts !== 1 || exits < 1) return null;
+  return normalized;
+}
+
+function isAiClearTile(tile) {
+  return tile === '0' || tile === 'S' || tile === 'E' || tile === 'R';
+}
+
+function isAiSolidTile(tile) {
+  return tile === '1' || tile === '<' || tile === '>' || tile === 'T';
+}
+
+function isAiDangerTile(tile) {
+  return tile === 'X' || tile === 'B';
+}
+
+function findAiTile(mapData, target) {
+  for (let r = 0; r < mapData.length; r++) {
+    for (let c = 0; c < mapData[r].length; c++) {
+      if (mapData[r][c] === target) return { r, c };
+    }
+  }
+  return null;
+}
+
+function hasClosedAiBorders(mapData) {
+  for (let c = 0; c < AI_MAP_COLS; c++) {
+    if (mapData[0][c] !== '1' || mapData[AI_MAP_ROWS - 1][c] !== '1') return false;
+  }
+  for (let r = 0; r < AI_MAP_ROWS; r++) {
+    if (mapData[r][0] !== '1' || mapData[r][AI_MAP_COLS - 1] !== '1') return false;
+  }
+  return true;
+}
+
+function hasSafeAiStart(mapData) {
+  const start = findAiTile(mapData, 'S');
+  if (!start || start.r < 2) return false;
+
+  for (let dr = -1; dr <= 1; dr++) {
+    for (let dc = -1; dc <= 1; dc++) {
+      const r = start.r + dr;
+      const c = start.c + dc;
+      if (r < 0 || r >= AI_MAP_ROWS || c < 0 || c >= AI_MAP_COLS) return false;
+      if (dr === 0 && dc === 0) continue;
+      if (isAiDangerTile(mapData[r][c])) return false;
+    }
+  }
+
+  return isAiClearTile(mapData[start.r - 1][start.c]) && isAiClearTile(mapData[start.r - 2][start.c]);
+}
+
+function hasFunctionalAiTunnels(mapData) {
+  for (let r = 1; r < AI_MAP_ROWS - 1; r++) {
+    for (let c = 1; c < AI_MAP_COLS - 1; c++) {
+      if (!isAiClearTile(mapData[r][c])) continue;
+      if (isAiSolidTile(mapData[r - 1][c]) && isAiSolidTile(mapData[r + 1][c])) return false;
+    }
+  }
+  return true;
+}
+
+function hasAiInteractiveGameplay(mapData) {
+  let count = 0;
+  for (let r = 0; r < mapData.length; r++) {
+    for (let c = 0; c < mapData[r].length; c++) {
+      const tile = mapData[r][c];
+      if (tile === 'R' || tile === '<' || tile === '>' || tile === 'T' || tile === 'B' || tile === 'X') count++;
+    }
+  }
+  return count >= 3;
+}
+
+function hasClearAiTravelLine(mapData, fromR, fromC, toR, toC) {
+  const steps = Math.max(Math.abs(toR - fromR), Math.abs(toC - fromC));
+  if (steps <= 1) return true;
+
+  for (let i = 1; i < steps; i++) {
+    const r = Math.round(fromR + ((toR - fromR) * i) / steps);
+    const c = Math.round(fromC + ((toC - fromC) * i) / steps);
+    if (r <= 0 || r >= AI_MAP_ROWS - 1 || c <= 0 || c >= AI_MAP_COLS - 1) return false;
+    if (!isAiClearTile(mapData[r][c])) return false;
+  }
+  return true;
+}
+
+function isMapValid(mapData) {
+  const normalized = normalizeAiMapData(mapData);
+  if (!normalized) return false;
+  if (!hasClosedAiBorders(normalized)) return false;
+  if (!hasSafeAiStart(normalized)) return false;
+  if (!hasFunctionalAiTunnels(normalized)) return false;
+  if (!hasAiInteractiveGameplay(normalized)) return false;
+
+  let start = null;
+  const rings = new Set();
+
+  for (let r = 0; r < normalized.length; r++) {
+    for (let c = 0; c < normalized[r].length; c++) {
+      const tile = normalized[r][c];
+      if (tile === 'S') start = {r,c};
+      if (tile === 'R') rings.add(r + ',' + c);
+    }
+  }
+
+  if (!start) return false;
+
+  const width = normalized[0].length;
+  const visited = Array(normalized.length).fill(0).map(() => Array(width).fill(false));
+  const queue = [start];
   visited[start.r][start.c] = true;
 
   let reachedExit = false;
-  let reachedRings = 0;
+  const reachedRings = new Set();
 
   while(queue.length > 0) {
-      let node = queue.shift();
-      let r = node.r;
-      let c = node.c;
-      
-      if(r === exit.r && c === exit.c) reachedExit = true;
-      if(mapData[r][c] === 'R') reachedRings++;
+      const node = queue.shift();
+      const r = node.r;
+      const c = node.c;
+      const currentTile = normalized[r][c];
 
-      const dirs = [];
-      for(let dr=-3; dr<=8; dr++) { 
-          for(let dc=-4; dc<=4; dc++) {
-              if (Math.abs(dr) <= 3 || (dr > 3 && Math.abs(dc) <= 2)) {
-                  dirs.push([dr, dc]);
-              }
+      if (currentTile === 'E') reachedExit = true;
+      if (currentTile === 'R') reachedRings.add(r + ',' + c);
+
+      const dirs = [[0, -1], [0, 1]];
+      for(let dr=-4; dr<=8; dr++) {
+          for(let dc=-5; dc<=5; dc++) {
+              if (dr !== 0 || dc !== 0) dirs.push([dr, dc]);
           }
       }
-      
+
       for(let i=0; i<dirs.length; i++) {
-          let dr = dirs[i][0];
-          let dc = dirs[i][1];
-          let nr = r + dr, nc = c + dc;
-          if(nr>=0 && nr<mapData.length && nc>=0 && nc<mapData[0].length && !visited[nr][nc]) {
-              let tile = mapData[nr][nc];
-              if(tile !== '1' && tile !== '2') {
-                  visited[nr][nc] = true;
-                  queue.push({r: nr, c: nc});
-              }
-          }
+          const dr = dirs[i][0];
+          const dc = dirs[i][1];
+          const nr = r + dr, nc = c + dc;
+          if(nr <= 0 || nr >= normalized.length - 1 || nc <= 0 || nc >= width - 1 || visited[nr][nc]) continue;
+          const tile = normalized[nr][nc];
+          if(!isAiClearTile(tile) || isAiDangerTile(tile)) continue;
+
+          if (!hasClearAiTravelLine(normalized, r, c, nr, nc)) continue;
+
+          visited[nr][nc] = true;
+          queue.push({r: nr, c: nc});
       }
   }
-  return reachedExit && (reachedRings === rings.length);
+  return reachedExit && (reachedRings.size === rings.size);
+}
+
+function parseAiLevelResponse(data) {
+  if (!data || !Array.isArray(data.map)) return null;
+  const normalized = normalizeAiMapData(data.map);
+  if (!normalized || !isMapValid(normalized)) return null;
+  return {
+    levelName: typeof data.levelName === 'string' ? data.levelName.trim().slice(0, 40) : 'AI Level',
+    map: normalized
+  };
 }
 
 async function generateCustomLevelAPI(userPrompt, retryCount = 0) {
-  const url = 'https://openrouter.ai/api/v1/chat/completions';
-  const systemInstruction = `You are an expert level designer for a 2D grid-based platformer game. Generate a level based on the user request.
-Tile Map Legend:
-'1': Wall/Floor
-'0': Empty Space
-'X': Spike (deadly)
-'B': Bomb (deadly)
-'<': Conveyor Left
-'>': Conveyor Right
-'T': Timed Trap (disappears periodically)
-'R': Ring (collectible)
-'S': Start Position (EXACTLY ONE required)
-'E': Exit Door (AT LEAST ONE required)
+  const endpoint = getAiEndpoint();
+  if (!endpoint) {
+    throw new Error('AI endpoint not configured. Add a serverless proxy endpoint before enabling AI generation.');
+  }
 
-Rules:
-1. Create a rectangular grid array EXACTLY 16 rows by 60 columns to create a MASSIVE, long adventure layout.
-2. The outer border MUST be mostly '1's to trap the player.
-3. CRITICAL STRUCTURAL RULE: 'S' MUST be placed on the far LEFT side of the map (column 1 or 2).
-4. CRITICAL STRUCTURAL RULE: 'E' MUST be placed on the far RIGHT side of the map (near the last column).
-5. Ensure a logically possible path from 'S' to 'E'. Maximum jump height is 3 tiles. Do NOT block paths entirely with Spikes or Bombs. Ensure all rings are reachable.
-6. RETURN ONLY RAW JSON matching this exact structure: {"levelName": "Name", "map": ["11...11", "10...E1"]}`;
-
-  const payload = {
-    model: "google/gemini-2.0-flash-lite-preview-02-05:free",
-    messages: [
-      { role: "system", content: systemInstruction },
-      { role: "user", content: userPrompt }
-    ],
-    response_format: { type: "json_object" }
-  };
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
 
   try {
-    const response = await fetch(url, { 
-        method: "POST", 
-        headers: { 
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + atob(obscureKey),
-            "HTTP-Referer": window.location.href,
-            "X-Title": "Old Bounce"
-        }, 
-        body: JSON.stringify(payload) 
+    const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          game: "old-bounce",
+          prompt: userPrompt,
+          width: AI_MAP_COLS,
+          height: AI_MAP_ROWS,
+          allowedTiles: Array.from(AI_ALLOWED_TILES)
+        }),
+        signal: controller.signal
     });
-    if (!response.ok) throw new Error("API Error");
+
+    if (!response.ok) throw new Error("AI proxy request failed");
+
     const data = await response.json();
-    let content = data.choices[0].message.content;
-    content = content.replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '').trim();
-    return JSON.parse(content);
+    const parsed = parseAiLevelResponse(data);
+    if (!parsed) throw new Error("AI proxy returned an invalid or unsafe level");
+
+    return parsed;
   } catch (err) {
-    if (retryCount < 4) {
+    if (err && err.name === 'AbortError') {
+      throw new Error('AI request timed out');
+    }
+    if (retryCount < 2) {
       await new Promise(r => setTimeout(r, mult(Math.pow(2, retryCount), 1000)));
       return generateCustomLevelAPI(userPrompt, retryCount + 1);
     }
     throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -577,18 +954,8 @@ window.submitAiLevel = async function(e) {
     while(!validMap && attempts < 3) {
         attempts++;
         const generated = await generateCustomLevelAPI(promptText);
-        
-        let mapData = generated.map;
-        let basicValid = mapData && mapData.length > 0 && mapData.some(row => row.includes('S')) && mapData.some(row => row.includes('E'));
-        
-        if(basicValid) {
-            let maxLen = Math.max.apply(null, mapData.map(r => r.length));
-            mapData = mapData.map(r => r.padEnd(maxLen, '1'));
-            
-            if(isMapValid(mapData)) {
-                validMap = mapData;
-            }
-        }
+        const parsed = parseAiLevelResponse(generated);
+        if(parsed) validMap = parsed.map;
     }
     
     if(!validMap) throw new Error("Blocked Level. Generating failed to find clear path.");
@@ -596,14 +963,14 @@ window.submitAiLevel = async function(e) {
     aiMapCache = validMap;
     gameMode = 'ai';
     
-    closePrompt();
+    hidePromptOnly();
     setTimeout(() => {
        loadLevelData(aiMapCache, true);
     }, 400);
 
   } catch(err) {
     console.error(err);
-    aiError.style.display = 'block';
+    setAiError(err && err.message ? err.message : 'Generation failed. Try again.');
   } finally {
     clearInterval(aiTimerInterval);
     btnSubmitAi.disabled = false;
@@ -623,6 +990,7 @@ window.startGame = function(e) {
 }
 
 function die() {
+  resetInputState();
   playSound('explosion');
   if(gameMode === 'ai') {
       loadLevelData(aiMapCache, true);
@@ -798,6 +1166,7 @@ function update() {
   if (!keys.up) keys.jumpPressed = false;
   
   checkCollisions();
+  if (gameState !== 'play') return;
   if (ball.y > map.length * TILE_SIZE + 200) { die(); return; }
   
   let targetStretch = ball.isGrounded ? 1 : 1 + mult(Math.abs(ball.vy), 0.015);
