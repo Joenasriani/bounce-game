@@ -47,7 +47,7 @@ The frontend and the Vercel API route both validate generated levels before load
 - safe spawn clearance
 - no one-tile-high tunnels
 - no solid/danger cells on approved path targets
-- at least 3 interactive/dynamic elements from rings, conveyors, timed platforms, bombs, or spikes
+- at least 3 interactive/dynamic elements from rings, conveyors, one timed platform, pulsing electric hazards, bombs, or spikes
 - reachable exit and reachable rings
 
 ## Tile meanings
@@ -60,6 +60,7 @@ B = bomb danger
 < = solid conveyor pushing left
 > = solid conveyor pushing right
 T = timed phase platform
+Z = pulsing electric hazard
 R = collectible ring
 S = player start
 E = exit
@@ -67,9 +68,17 @@ E = exit
 
 ## Responsive UI pass
 
-This version keeps gameplay, physics, level data, and visual identity unchanged while improving menu and controller layout across mobile, tablet, desktop, and landscape screens.
+This version keeps the core gameplay, physics feel, controls, and visual identity intact while improving menu/controller layout and introducing a cleaner Level 8+ dynamic obstacle progression.
 
 - Menus use viewport-safe sizing and safe-area padding.
 - Overlay panels are designed to stay fully visible without internal scrollbars.
 - Touch controls scale with viewport size and respect mobile safe areas.
 - HUD badges wrap safely on smaller screens.
+
+
+## Level design update
+
+- Level 8 was rebuilt so the player no longer faces several repeated disappearing tier platforms.
+- Timed phase platforms are now used as a single intentional bridge/gate section, not as every tier of the level.
+- A new `Z` pulsing electric hazard starts from Level 8 onward. It is placed on readable paths with waiting space so the player resolves timing instead of fighting random placement.
+- Level 9 and Level 10 continue the `Z` mechanic with higher pressure while preserving the same Bounce-style movement feel.

@@ -2,11 +2,11 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 const HEIGHT = 16;
 const WIDTH = 60;
-const ALLOWED = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'R', 'S', 'E']);
+const ALLOWED = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'Z', 'R', 'S', 'E']);
 const DANGER = new Set(['X', 'B']);
 const SOLID = new Set(['1', '<', '>', 'T']);
-const INTERACTIVE = new Set(['R', '<', '>', 'T', 'B', 'X']);
-const CLEAR = new Set(['0', 'S', 'E', 'R']);
+const INTERACTIVE = new Set(['R', '<', '>', 'T', 'Z', 'B', 'X']);
+const CLEAR = new Set(['0', 'S', 'E', 'R', 'Z']);
 
 function sendJson(res, status, payload) {
   res.statusCode = status;
@@ -60,6 +60,10 @@ function isSolid(tile) {
   return SOLID.has(tile);
 }
 
+function isDynamicHazard(tile) {
+  return tile === 'Z';
+}
+
 function hasMostlyClosedBorders(map) {
   for (let c = 0; c < WIDTH; c++) {
     if (map[0][c] !== '1' || map[HEIGHT - 1][c] !== '1') return false;
@@ -81,7 +85,7 @@ function hasSafeStart(map) {
       const c = start.c + dc;
       if (r < 0 || r >= HEIGHT || c < 0 || c >= WIDTH) return false;
       if (dr === 0 && dc === 0) continue;
-      if (isDanger(map[r][c])) return false;
+      if (isDanger(map[r][c]) || isDynamicHazard(map[r][c])) return false;
     }
   }
 
@@ -234,7 +238,7 @@ Required output JSON shape:
 Hard geometry rules:
 - Exactly 16 rows.
 - Exactly 60 columns per row.
-- Allowed characters only: 0, 1, X, B, <, >, T, R, S, E.
+- Allowed characters only: 0, 1, X, B, <, >, T, Z, R, S, E.
 - Top, bottom, left, and right borders must be solid 1.
 - Keep functional ceiling height. Do not create one-tile-high tunnels or crawlspaces.
 - Use readable platform structures, ramps/stairs made from 1 tiles, ledges, bridges, and open air pockets.
@@ -248,20 +252,21 @@ Tile meanings:
 - X = spike danger.
 - B = bomb danger.
 - < and > = solid conveyor platforms that push left/right.
-- T = timed phase platform. It becomes solid and non-solid over time. Use it as a dynamic obstacle/bridge, not as a trampoline.
+- T = timed phase platform. It becomes solid and non-solid over time. Use it as one intentional dynamic bridge or gate, not as repeated disappearing tiers.
+- Z = pulsing electric hazard. It alternates between dangerous and safe, so place it in readable timing sections with enough space to wait.
 - R = collectible ring. The exit opens only after all rings are collected.
 - S = player start. Use exactly one S.
 - E = exit. Use at least one E.
 
 Dynamic/interaction requirement:
-- Include at least 3 interactive/dynamic elements total from R, <, >, T, B, X.
-- The player should need to resolve or react to at least one mechanic: collect rings before exit, cross conveyors, time phase platforms, or avoid bombs/spikes.
-- Do not spam hazards. Make them intentional and fair.
+- Include at least 3 interactive/dynamic elements total from R, <, >, T, Z, B, X.
+- The player should need to resolve or react to at least one mechanic: collect rings before exit, cross conveyors, time one phase platform, wait through pulsing Z hazards, or avoid bombs/spikes.
+- Do not spam hazards. Make them intentional, fair, and placed with safe waiting space before the obstacle.
 
 Concept adherence:
 - If the user asks for a cave, make it tunnel-like but still tall enough.
 - If the user asks for lava/traps, use X/B hazards carefully.
-- If the user asks for moving/dynamic obstacles, use conveyors and T phase platforms.
+- If the user asks for moving/dynamic obstacles, use conveyors, one T phase platform, and Z pulse hazards.
 - If the user asks for treasure/collection, use R rings.
 - If the user asks for easy, keep hazards sparse and platforms wide.
 - If the user asks for hard, add more timing and hazard pressure but keep the route valid.
