@@ -2,11 +2,11 @@ const OPENROUTER_URL = 'https://openrouter.ai/api/v1/chat/completions';
 
 const HEIGHT = 16;
 const WIDTH = 60;
-const ALLOWED = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'Z', 'R', 'S', 'E']);
+const ALLOWED = new Set(['0', '1', 'X', 'B', '<', '>', 'T', 'Z', 'M', 'L', 'P', 'V', 'F', 'W', 'H', 'G', 'J', '~', 'U', 'N', 'Q', 'Y', 'A', 'K', 'O', 'D', 'R', 'S', 'E']);
 const DANGER = new Set(['X', 'B']);
-const SOLID = new Set(['1', '<', '>', 'T']);
-const INTERACTIVE = new Set(['R', '<', '>', 'T', 'Z', 'B', 'X']);
-const CLEAR = new Set(['0', 'S', 'E', 'R', 'Z']);
+const SOLID = new Set(['1', '<', '>', 'T', 'H', 'G', 'J', 'Q']);
+const INTERACTIVE = new Set(['R', '<', '>', 'T', 'Z', 'M', 'L', 'P', 'V', 'F', 'W', 'H', 'G', 'J', '~', 'U', 'N', 'Q', 'Y', 'A', 'K', 'O', 'D', 'B', 'X']);
+const CLEAR = new Set(['0', 'S', 'E', 'R', 'Z', 'M', 'L', 'P', 'V', 'F', 'W', '~', 'U', 'N', 'Y', 'A', 'K', 'O', 'D']);
 
 function sendJson(res, status, payload) {
   res.statusCode = status;
@@ -61,7 +61,7 @@ function isSolid(tile) {
 }
 
 function isDynamicHazard(tile) {
-  return tile === 'Z';
+  return tile === 'Z' || tile === 'M' || tile === 'L' || tile === 'P' || tile === 'V' || tile === 'F' || tile === 'W' || tile === 'H' || tile === 'G' || tile === 'J' || tile === 'D';
 }
 
 function hasMostlyClosedBorders(map) {
@@ -238,10 +238,12 @@ Required output JSON shape:
 Hard geometry rules:
 - Exactly 16 rows.
 - Exactly 60 columns per row.
-- Allowed characters only: 0, 1, X, B, <, >, T, Z, R, S, E.
+- Allowed characters only: 0, 1, X, B, <, >, T, Z, M, L, P, V, F, W, H, G, J, ~, U, N, Q, Y, A, K, O, D, R, S, E.
 - Top, bottom, left, and right borders must be solid 1.
 - Keep functional ceiling height. Do not create one-tile-high tunnels or crawlspaces.
 - Use readable platform structures, ramps/stairs made from 1 tiles, ledges, bridges, and open air pockets.
+- Do not return a flat, same-height platform strip. Build a distinct tier-height sequence that matches the player's concept. Use one clear archetype: single upward jump, downward drop plus upward jump, three-height route, staircase-up/drop/up, valley, peak, alternating heights, long ascent then drop, or two separated tier islands.
+- Avoid senseless tier stacking: do not place two playable tiers directly below one another over the same X range unless there is an intended gap/drop/slope path.
 - Keep a clear playable route from S to E.
 - If using rings, all rings must be reachable before the exit.
 - Do not place S inside danger, next to danger, clipped into walls, or under a low ceiling.
@@ -254,23 +256,44 @@ Tile meanings:
 - < and > = solid conveyor platforms that push left/right.
 - T = timed phase platform. It becomes solid and non-solid over time. Use it as one intentional dynamic bridge or gate, not as repeated disappearing tiers.
 - Z = pulsing electric hazard. It alternates between dangerous and safe, so place it in readable timing sections with enough space to wait.
+- M = moving electric gate/hazard. It slides horizontally inside its tile and must be timed.
+- L = rotating laser hazard. It rotates inside its tile and must be timed.
+- P = proximity bomb. It reacts to player proximity and punishes lingering too close.
+- V = vertical crusher hazard. It moves up and down inside its tile.
+- F = falling crusher/spike. It drops cyclically and must be timed.
+- W = sweeping laser. It scans across its tile and works well in harder concepts.
 - R = collectible ring. The exit opens only after all rings are collected.
+- H = horizontally moving platform.
+- G = falling platform.
+- J = bounce pad / spring.
+- ~ = water. Red ball sinks; large blue ball floats.
+- U = blue enlarge pickup/spike with a yellow dome. Changes red ball to large blue ball.
+- N = red shrink pickup/spike. Returns large blue ball to normal red ball.
+- Q = rubber block/trampoline block for repeated bounce height.
+- Y = speed box, temporary horizontal boost.
+- A = anti-gravity spike/booster.
+- K = gold diamond checkpoint crystal.
+- O = gold extra-life sphere with a pink heart.
+- D = moving spider enemy.
 - S = player start. Use exactly one S.
 - E = exit. Use at least one E.
 
 Dynamic/interaction requirement:
-- Include at least 3 interactive/dynamic elements total from R, <, >, T, Z, B, X.
-- The player should need to resolve or react to at least one mechanic: collect rings before exit, cross conveyors, time one phase platform, wait through pulsing Z hazards, or avoid bombs/spikes.
+- Include at least 3 interactive/dynamic/classic elements total from R, <, >, T, Z, M, L, P, V, F, W, H, G, J, ~, U, N, Q, Y, A, K, O, D. Avoid static X/B unless the user explicitly asks for a single static trap accent.
+- The player should need to resolve or react to at least one mechanic: collect rings before exit, cross conveyors, time one phase platform, wait through pulsing Z hazards, time M moving gates, time L rotating lasers, avoid P proximity bombs, dodge V vertical crushers, wait for F falling crushers, cross W sweeping lasers, or resolve rings before exit.
 - Do not spam hazards. Make them intentional, fair, and placed with safe waiting space before the obstacle.
+- Place every obstacle on the critical left-to-right route, not in optional dead ends or decorative alcoves.
 
 Concept adherence:
 - If the user asks for a cave, make it tunnel-like but still tall enough.
 - If the user asks for lava/traps, use X/B hazards carefully.
-- If the user asks for moving/dynamic obstacles, use conveyors, one T phase platform, and Z pulse hazards.
+- If the user asks for moving/dynamic obstacles, use conveyors, one T phase platform, Z pulse hazards, M moving gates, L rotating lasers, P proximity bombs, V vertical crushers, F falling crushers, and W sweeping lasers.
 - If the user asks for treasure/collection, use R rings.
 - If the user asks for easy, keep hazards sparse and platforms wide.
 - If the user asks for hard, add more timing and hazard pressure but keep the route valid.
 
+RINGS AND LOCKED EXIT RULE: include rings on or directly adjacent to the main critical path; the level exit must be treated as locked until all rings are collected. Do not hide rings in long detours. Collectibles share gold/yellow readability: R is a gold donut ring, K is a gold diamond checkpoint, O is a gold extra-life sphere with a pink heart.
+SHAPE VARIETY RULE: avoid flat corridors. Build a visible tier shape such as staircase climb, descent, split path, moving platform section, valley with bounce pad, switchback, falling-platform chain, vertical layers, or final gauntlet.
 Return JSON only. No markdown. No explanation.
 
 Player request:
