@@ -1,16 +1,17 @@
-# Old Bounce
+# Bounce Game - GitHub/Vercel AI Build
 
-**Game lineage:** Bounce  
-**Status:** original browser platform game  
-**Creator:** Joe Nasr  
-**Creator identity:** https://joe-nasr-signals.vercel.app/v2/
+This build includes the browser game plus the Vercel serverless AI route.
 
-Old Bounce is a compact browser platform game built around movement, jumping and short arcade challenges.
+## Deploy
+1. Upload the contents of this folder to GitHub.
+2. Deploy with Vercel.
+3. Add environment variables in Vercel:
+   - OPENROUTER_API_KEY
+   - AI_MODEL=openrouter/free or your preferred OpenRouter model
 
-## Current build
+## Font
+This build uses one remote rounded web font only: Fredoka from Google Fonts.
+No local .otf font files are required.
+If Google Fonts is unavailable, the game falls back to rounded/system fonts.
 
-The browser game can use a server-side OpenRouter route for generated level content when the required environment variable is configured. The API key is not part of the browser source.
-
-The historical project name **Bounce** and the current in-game title **Old Bounce** refer to the same game lineage.
-
-Existing branches and historical files are retained as development history.
+The API key must stay in Vercel environment variables only. Do not place it in index.html.
