@@ -1,10 +1,13 @@
 # Old Bounce
 
-Public game: https://joenasr.itch.io/bounce
+Browser-based version of Old Bounce.
 
-Repository role: development/deployment build for the Old Bounce browser game.
+Play:
+https://joenasr.itch.io/bounce
 
-This repository contains the browser game and its Vercel serverless route.
+This repository contains the game implementation together with its Vercel serverless route for AI-backed functionality.
+
+The frontend runs in the browser, while API credentials and model access remain server-side through Vercel environment variables.
 
 ## Deploy
 1. Upload the contents of this folder to GitHub.
