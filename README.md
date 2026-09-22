@@ -1,6 +1,10 @@
-# Bounce Game - GitHub/Vercel AI Build
+# Old Bounce
 
-This build includes the browser game plus the Vercel serverless AI route.
+Public game: https://joenasr.itch.io/bounce
+
+Repository role: development/deployment build for the Old Bounce browser game.
+
+This repository contains the browser game and its Vercel serverless route.
 
 ## Deploy
 1. Upload the contents of this folder to GitHub.
